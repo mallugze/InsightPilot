@@ -6,18 +6,30 @@ import {
   History, 
   FileText, 
   Settings, 
-  Plus 
+  Plus,
+  Upload,
+  MessageSquareCode
 } from 'lucide-react';
+import { useWorkspace } from '../../context/WorkspaceContext';
 import { Button } from '../ui/Button';
 
 export const Sidebar = () => {
-  const navItems = [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/workspaces', label: 'Workspaces', icon: FolderOpen },
-    { to: '/history', label: 'Analysis History', icon: History },
-    { to: '/reports', label: 'Reports', icon: FileText },
-    { to: '/settings', label: 'Settings', icon: Settings },
-  ];
+  const { isWorkspaceConfirmed, workspaceName, profile } = useWorkspace();
+
+  // Progressive Disclosure Nav Items
+  const navItems = isWorkspaceConfirmed
+    ? [
+        { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        { to: '/workspaces', label: 'Workspace', icon: FolderOpen },
+        { to: '/history', label: 'Analysis History', icon: History },
+        { to: '/chat', label: 'AI Analyst', icon: MessageSquareCode },
+        { to: '/reports', label: 'Reports', icon: FileText },
+        { to: '/settings', label: 'Settings', icon: Settings },
+      ]
+    : [
+        { to: '/workspaces', label: 'Workspace', icon: FolderOpen },
+        { to: '/upload', label: 'Upload', icon: Upload },
+      ];
 
   return (
     <nav className="h-screen w-64 border-r border-outline-variant bg-surface-container-lowest flex flex-col p-4 gap-2 z-50 sticky top-0 shrink-0">
@@ -32,14 +44,16 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      {/* New Analysis Button */}
-      <Button 
-        className="w-full bg-primary text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md font-medium mb-6 hover:bg-inverse-surface transition-colors shadow-sm flex items-center justify-center gap-2"
-        onClick={() => alert('New analysis session started')}
-      >
-        <Plus size={20} />
-        New Analysis
-      </Button>
+      {/* New Analysis Button (only visible after onboarding is completed) */}
+      {isWorkspaceConfirmed && (
+        <Button 
+          className="w-full bg-primary text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md font-medium mb-6 hover:bg-inverse-surface transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+          onClick={() => alert('New analysis session started')}
+        >
+          <Plus size={20} />
+          New Analysis
+        </Button>
+      )}
 
       {/* Navigation Links */}
       <div className="flex-1 space-y-1">
@@ -64,17 +78,21 @@ export const Sidebar = () => {
         })}
       </div>
 
-      {/* Admin Profile Section */}
+      {/* Profile Section (Elena Rostova or customized profile) */}
       <div className="mt-auto pt-4 border-t border-outline-variant/50">
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
           <img 
             className="w-8 h-8 rounded-full object-cover border border-outline-variant shrink-0" 
-            alt="Elena Rostova Avatar" 
+            alt="User Avatar" 
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1R6mVnj-9I2q9qpSljtnkmpu355R7TD8JL_ASuAmbTg6TwW1_JCxvZ6N3RV9iDtpn9ZShYz1ox_OKC6GzOUl6_y0ZjjgEI0emUG4gzgTRZLi66dbPf9arbRv3BsnIYK7rgKcBz1o8cpUzHga9eloqZVszQuDB9gaYfyhuMNcTuxeyGmdU6llYpujSIndiVeZyBrcP8qJ87-_msxfHmo91rLOrfEW-Kp_-jwlEsNT_E1DlvruCm3zLQQ"
           />
           <div className="flex flex-col text-left">
-            <span className="font-label-md text-label-md text-on-surface">Elena Rostova</span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Admin</span>
+            <span className="font-label-md text-label-md text-on-surface">
+              {profile?.fullName || 'Guest User'}
+            </span>
+            <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px]">
+              {workspaceName || 'No Workspace'}
+            </span>
           </div>
         </div>
       </div>

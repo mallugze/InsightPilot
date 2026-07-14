@@ -1,11 +1,14 @@
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './routes/AppRoutes';
+import { WorkspaceProvider } from './context/WorkspaceContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <WorkspaceProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </WorkspaceProvider>
   );
 }
 
