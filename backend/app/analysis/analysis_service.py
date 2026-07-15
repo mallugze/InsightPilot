@@ -102,7 +102,11 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
     recommendations = generate_recommendations(dataset_type, kpis, pulse, trends, anomalies, correlations)
     insights = generate_insights(dataset_type, kpis, pulse, trends, anomalies, correlations, hero_zero)
 
-    # 5. Save and Cache the analysis results
+    # 5. Run Semantic Understanding Engine
+    from app.analysis.semantic.semantic_builder import build_semantic_profile
+    sem_profile = build_semantic_profile(df, col_metadata)
+
+    # 6. Save and Cache the analysis results
     analysis_result = AnalysisResult(
         workspace_id=dataset.workspace_id,
         dataset_id=dataset.id,
@@ -116,7 +120,15 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
         anomalies=anomalies,
         correlations=correlations,
         recommendations=recommendations,
-        insights=insights
+        insights=insights,
+        semantic_profile=sem_profile,
+        dataset_domain=sem_profile["domain"],
+        entity=sem_profile["entity"],
+        feature_metadata=sem_profile["features"],
+        relationship_metadata=sem_profile["relationships"],
+        ml_readiness=sem_profile["ml_readiness"],
+        chart_suggestions=sem_profile["visualization_intent"],
+        kpi_suggestions=sem_profile["kpi_suggestions"]
     )
     
     try:

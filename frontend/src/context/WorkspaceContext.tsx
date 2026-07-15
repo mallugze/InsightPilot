@@ -10,11 +10,17 @@ export interface UserProfile {
 export interface DatasetUploadState {
   fileName: string;
   fileSize: string;
+  datasetId?: string;
   datasetType?: string;
   rowsCount?: number;
   colsCount?: number;
   businessPulse?: number;
   topInsight?: string;
+  missingValues?: number;
+  duplicates?: number;
+  qualityScore?: number;
+  preview?: any[];
+  columnMetadata?: any;
 }
 
 export interface AppNotification {
@@ -40,7 +46,7 @@ interface WorkspaceContextType {
   saveProfile: (fullName: string, email: string, companyName?: string) => void;
   verifyEmailCode: (code: string) => Promise<boolean>;
   setSessionResumed: (resumed: boolean) => void;
-  startUpload: (fileName: string, fileSize: string) => void;
+  startUpload: (uploadData: DatasetUploadState) => void;
   completeAnalysis: (
     datasetType: string,
     rowsCount: number,
@@ -176,13 +182,12 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     sessionStorage.setItem(SESSION_STORAGE_KEYS.SESSION_RESUMED, resumed ? 'true' : 'false');
   };
 
-  const startUpload = (fileName: string, fileSize: string) => {
-    const state: DatasetUploadState = { fileName, fileSize };
-    setUploadState(state);
+  const startUpload = (uploadData: DatasetUploadState) => {
+    setUploadState(uploadData);
     setAnalysisState('analyzing');
-    localStorage.setItem(LOCAL_STORAGE_KEYS.UPLOAD_STATE, JSON.stringify(state));
+    localStorage.setItem(LOCAL_STORAGE_KEYS.UPLOAD_STATE, JSON.stringify(uploadData));
     localStorage.setItem(LOCAL_STORAGE_KEYS.ANALYSIS_STATE, 'analyzing');
-    addNotification('File Uploaded', `Inbound dataset ${fileName} received successfully.`, 'info');
+    addNotification('File Ingested', `Dataset ${uploadData.fileName} processed successfully.`, 'info');
   };
 
   const completeAnalysis = (

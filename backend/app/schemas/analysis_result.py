@@ -14,6 +14,14 @@ class AnalysisResultBase(BaseModel):
     correlations: Optional[Dict[str, Any]] = None
     recommendations: Optional[List[Dict[str, Any]]] = None
     insights: Optional[List[str]] = None
+    semantic_profile: Optional[Dict[str, Any]] = None
+    dataset_domain: Optional[str] = None
+    entity: Optional[str] = None
+    feature_metadata: Optional[List[Dict[str, Any]]] = None
+    relationship_metadata: Optional[Dict[str, Any]] = None
+    ml_readiness: Optional[Dict[str, Any]] = None
+    chart_suggestions: Optional[List[Dict[str, Any]]] = None
+    kpi_suggestions: Optional[List[Dict[str, Any]]] = None
 
 class AnalysisResultCreate(AnalysisResultBase):
     workspace_id: Optional[int] = None

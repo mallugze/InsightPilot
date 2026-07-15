@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useWorkspace } from '../../../context/WorkspaceContext';
 import { Card } from '../../../components/ui/Card';
-import { Check, Sparkles } from 'lucide-react';
+import { runDatasetAnalysis } from '../../../services/analysis';
+import { Check, Sparkles, AlertCircle } from 'lucide-react';
 
 interface ProgressStep {
   label: string;
@@ -21,6 +22,22 @@ export default function AnalysisProgressPage() {
   ]);
 
   const [progressPercent, setProgressPercent] = useState(0);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const triggerBackendAnalysis = async () => {
+      try {
+        if (uploadState?.datasetId) {
+          const datasetIdNum = parseInt(uploadState.datasetId, 10);
+          await runDatasetAnalysis(datasetIdNum);
+        }
+      } catch (err: any) {
+        console.error("Backend analysis failed:", err);
+        setAnalysisError(err.message || "Failed to calculate business metrics on the backend.");
+      }
+    };
+    triggerBackendAnalysis();
+  }, [uploadState?.datasetId]);
 
   useEffect(() => {
     let currentStepIndex = 0;
@@ -29,13 +46,19 @@ export default function AnalysisProgressPage() {
       if (currentStepIndex >= steps.length) {
         clearInterval(interval);
         
-        // Mock successful analysis completion data
-        const datasetType = 'Sales Dataset';
-        const rowsCount = 1240;
-        const colsCount = 12;
-        const businessPulse = 87;
-        const topInsight = 'Revenue grew by 14% this quarter, primarily driven by enterprise contract renewals. Mid-market CAC increased by 8%.';
-        const suggestedWorkspaceName = 'Q3 Sales Analysis';
+        // Retrieve actual database values populated during ingestion
+        const datasetType = uploadState?.datasetType || 'Standard Dataset';
+        const rowsCount = uploadState?.rowsCount || 0;
+        const colsCount = uploadState?.colsCount || 0;
+        const businessPulse = Math.round(uploadState?.qualityScore || 95);
+        const topInsight = `Successfully loaded ${rowsCount} rows. The Profiling Engine detected ${
+          uploadState?.columnMetadata?.columns?.filter((c: any) => c.is_numeric).length || 0
+        } numeric variables and ${
+          uploadState?.columnMetadata?.columns?.filter((c: any) => c.is_categorical).length || 0
+        } categorical features, ready for decision intelligence.`;
+        const suggestedWorkspaceName = uploadState?.datasetType 
+          ? `${uploadState.datasetType} Workspace` 
+          : 'Business Analysis';
 
         completeAnalysis(
           datasetType,
@@ -48,8 +71,8 @@ export default function AnalysisProgressPage() {
         return;
       }
 
-      setSteps((prevSteps) => {
-        const nextSteps = prevSteps.map((step, idx) => {
+      setSteps((prevSteps: ProgressStep[]) => {
+        const nextSteps = prevSteps.map((step: ProgressStep, idx: number) => {
           if (idx < currentStepIndex) {
             return { ...step, state: 'completed' as const };
           } else if (idx === currentStepIndex) {
@@ -66,7 +89,7 @@ export default function AnalysisProgressPage() {
     }, 900); // 900ms per step
 
     return () => clearInterval(interval);
-  }, []);
+  }, [uploadState, completeAnalysis, steps.length]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center px-4 antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed">
@@ -78,6 +101,13 @@ export default function AnalysisProgressPage() {
           </div>
           <span className="font-display text-xl font-bold tracking-tighter text-primary">InsightPilot AI</span>
         </div>
+
+        {analysisError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm flex items-start gap-2">
+            <AlertCircle size={16} className="mt-0.5 shrink-0" />
+            <p className="m-0 font-medium">{analysisError}</p>
+          </div>
+        )}
 
         {/* Title Block */}
         <div className="space-y-1.5 mb-8">
@@ -99,7 +129,7 @@ export default function AnalysisProgressPage() {
 
         {/* Steps List */}
         <div className="space-y-4">
-          {steps.map((step, idx) => {
+          {steps.map((step: ProgressStep, idx: number) => {
             const isActive = step.state === 'active';
             const isCompleted = step.state === 'completed';
             

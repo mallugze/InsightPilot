@@ -19,6 +19,17 @@ class AnalysisResult(Base):
     correlations = Column(JSON, nullable=True)
     recommendations = Column(JSON, nullable=True)
     insights = Column(JSON, nullable=True)
+    
+    # Semantic fields
+    semantic_profile = Column(JSON, nullable=True)
+    dataset_domain = Column(String, nullable=True)
+    entity = Column(String, nullable=True)
+    feature_metadata = Column(JSON, nullable=True)
+    relationship_metadata = Column(JSON, nullable=True)
+    ml_readiness = Column(JSON, nullable=True)
+    chart_suggestions = Column(JSON, nullable=True)
+    kpi_suggestions = Column(JSON, nullable=True)
+    
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     def to_dict(self):
@@ -37,5 +48,13 @@ class AnalysisResult(Base):
             "correlations": self.correlations,
             "recommendations": self.recommendations,
             "insights": self.insights,
+            "semantic_profile": self.semantic_profile,
+            "dataset_domain": self.dataset_domain,
+            "entity": self.entity,
+            "feature_metadata": self.feature_metadata,
+            "relationship_metadata": self.relationship_metadata,
+            "ml_readiness": self.ml_readiness,
+            "chart_suggestions": self.chart_suggestions,
+            "kpi_suggestions": self.kpi_suggestions,
             "created_at": self.created_at.isoformat() if self.created_at else None
         }

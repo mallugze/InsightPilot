@@ -5,6 +5,9 @@ import { UploadCloud, ShieldCheck, FileSpreadsheet, Play, RefreshCw, AlertCircle
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 
+import { getOrCreateSessionId } from '../../../utils/storage';
+import { uploadDatasetFile } from '../../../services/upload';
+
 interface SelectedFileMetadata {
   name: string;
   size: string;
@@ -12,6 +15,13 @@ interface SelectedFileMetadata {
   rowsCount: number;
   colsCount: number;
   estimatedTime: string;
+  datasetId?: string;
+  datasetType?: string;
+  missingValues?: number;
+  duplicates?: number;
+  qualityScore?: number;
+  preview?: any[];
+  columnMetadata?: any;
 }
 
 export default function UploadPage() {
@@ -21,45 +31,59 @@ export default function UploadPage() {
   
   const [selectedFile, setSelectedFile] = useState<SelectedFileMetadata | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileSelection = (name: string, sizeBytes: number) => {
+  const handleFileUpload = async (file: File) => {
     setValidationError(null);
-    const extension = name.split('.').pop()?.toLowerCase();
+    setSelectedFile(null);
     
+    const extension = file.name.split('.').pop()?.toLowerCase();
     if (!['csv', 'xls', 'xlsx'].includes(extension || '')) {
       setValidationError('Unsupported file format. Please upload a CSV or Excel spreadsheet (.csv, .xls, .xlsx).');
-      setSelectedFile(null);
       return;
     }
 
-    if (sizeBytes > 50 * 1024 * 1024) {
+    if (file.size > 50 * 1024 * 1024) {
       setValidationError('File is too large. Max supported size is 50MB.');
-      setSelectedFile(null);
       return;
     }
 
-    const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(1);
-    
-    // Derive custom rows and columns counts based on mock file name details
-    const isSales = name.toLowerCase().includes('sales');
-    const rows = isSales ? 1240 : 850;
-    const cols = isSales ? 12 : 8;
-    const timeSec = isSales ? '6 seconds' : '4 seconds';
-
-    setSelectedFile({
-      name,
-      size: `${sizeBytes < 1024 * 1024 ? (sizeBytes / 1024).toFixed(0) + ' KB' : sizeMB + ' MB'}`,
-      type: extension?.toUpperCase() === 'CSV' ? 'CSV Dataset' : 'Excel Workbook',
-      rowsCount: rows,
-      colsCount: cols,
-      estimatedTime: timeSec,
-    });
+    setIsUploading(true);
+    try {
+      const sessionId = getOrCreateSessionId();
+      const response = await uploadDatasetFile(file, sessionId);
+      
+      if (response.success) {
+        setSelectedFile({
+          name: response.fileName,
+          size: response.fileSize,
+          type: response.format === 'csv' ? 'CSV Dataset' : 'Excel Workbook',
+          rowsCount: response.rowsCount,
+          colsCount: response.colsCount,
+          estimatedTime: `${response.estimatedProcessingTimeSeconds} seconds`,
+          datasetId: response.datasetId,
+          datasetType: response.datasetType,
+          missingValues: response.missingValues,
+          duplicates: response.duplicates,
+          qualityScore: response.qualityScore,
+          preview: response.preview,
+          columnMetadata: response.columnMetadata,
+        });
+      } else {
+        setValidationError(response.message || 'Upload failed during validation.');
+      }
+    } catch (err: any) {
+      console.error(err);
+      setValidationError(err.message || 'An error occurred while uploading the file.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      handleFileSelection(file.name, file.size);
+      handleFileUpload(file);
     }
   };
 
@@ -70,7 +94,19 @@ export default function UploadPage() {
 
   const handleStartAnalysis = () => {
     if (selectedFile) {
-      startUpload(selectedFile.name, selectedFile.size);
+      startUpload({
+        fileName: selectedFile.name,
+        fileSize: selectedFile.size,
+        datasetId: selectedFile.datasetId,
+        datasetType: selectedFile.datasetType,
+        rowsCount: selectedFile.rowsCount,
+        colsCount: selectedFile.colsCount,
+        missingValues: selectedFile.missingValues,
+        duplicates: selectedFile.duplicates,
+        qualityScore: selectedFile.qualityScore,
+        preview: selectedFile.preview,
+        columnMetadata: selectedFile.columnMetadata,
+      });
       navigate('/analysis-progress');
     }
   };
@@ -97,7 +133,7 @@ export default function UploadPage() {
       />
 
       {/* Stage 1: File Selector Dropzone */}
-      {!selectedFile && (
+      {!selectedFile && !isUploading && (
         <Card 
           onClick={triggerBrowse}
           className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white rounded-xl p-12 text-center transition-colors cursor-pointer group shadow-sm"
@@ -112,6 +148,21 @@ export default function UploadPage() {
                 <span className="text-blue-600 font-bold group-hover:underline">browse</span>
               </p>
               <p className="text-sm text-slate-400 mt-1.5 m-0">Supports CSV, XLS, XLSX formats (Max 50MB)</p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Uploading Progress Loader */}
+      {isUploading && (
+        <Card className="border border-slate-200 bg-white rounded-xl p-12 text-center shadow-sm">
+          <div className="space-y-4">
+            <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto animate-spin">
+              <RefreshCw size={32} />
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-slate-800 m-0 animate-pulse">Uploading and profiling dataset...</p>
+              <p className="text-sm text-slate-400 mt-1.5 m-0">FastAPI is validating headers and running statistical checks.</p>
             </div>
           </div>
         </Card>
