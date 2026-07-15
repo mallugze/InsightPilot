@@ -1,0 +1,41 @@
+from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, JSON
+from datetime import datetime
+from app.database.session import Base
+
+class AnalysisResult(Base):
+    __tablename__ = "analysis_results"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    workspace_id = Column(Integer, ForeignKey("workspaces.id", ondelete="CASCADE"), nullable=True)
+    dataset_id = Column(Integer, ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    business_pulse = Column(Float, nullable=False)
+    health_label = Column(String, nullable=False)
+    pulse_breakdown = Column(JSON, nullable=True)
+    kpis = Column(JSON, nullable=True)
+    hero = Column(JSON, nullable=True)
+    zero = Column(JSON, nullable=True)
+    trends = Column(JSON, nullable=True)
+    anomalies = Column(JSON, nullable=True)
+    correlations = Column(JSON, nullable=True)
+    recommendations = Column(JSON, nullable=True)
+    insights = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "workspace_id": self.workspace_id,
+            "dataset_id": self.dataset_id,
+            "business_pulse": self.business_pulse,
+            "health_label": self.health_label,
+            "pulse_breakdown": self.pulse_breakdown,
+            "kpis": self.kpis,
+            "hero": self.hero,
+            "zero": self.zero,
+            "trends": self.trends,
+            "anomalies": self.anomalies,
+            "correlations": self.correlations,
+            "recommendations": self.recommendations,
+            "insights": self.insights,
+            "created_at": self.created_at.isoformat() if self.created_at else None
+        }

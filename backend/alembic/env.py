@@ -7,6 +7,8 @@ from alembic import context
 from app.database.session import Base
 # Import all models to ensure they are registered on the Base
 from app.models.workspace import Workspace
+from app.models.dataset import Dataset
+from app.models.analysis_result import AnalysisResult
 from app.core.config import settings
 
 # This is the Alembic Config object, which provides

@@ -6,3 +6,7 @@ pg8000
 pydantic
 pydantic-settings
 python-dotenv
+pandas
+numpy
+openpyxl
+python-multipart
