@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InsightPilot - Workspace Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "tertiary-fixed": "#fcdeb5",
+                            "tertiary": "#000000",
+                            "surface-tint": "#565e74",
+                            "on-error": "#ffffff",
+                            "on-tertiary": "#ffffff",
+                            "secondary-container": "#2170e4",
+                            "on-tertiary-fixed": "#271901",
+                            "on-tertiary-fixed-variant": "#574425",
+                            "surface-container-lowest": "#ffffff",
+                            "outline-variant": "#c6c6cd",
+                            "inverse-surface": "#213145",
+                            "tertiary-fixed-dim": "#dec29a",
+                            "secondary-fixed": "#d8e2ff",
+                            "error": "#ba1a1a",
+                            "tertiary-container": "#271901",
+                            "outline": "#76777d",
+                            "surface": "#f8f9ff",
+                            "on-secondary-fixed-variant": "#004395",
+                            "surface-container-low": "#eff4ff",
+                            "secondary-fixed-dim": "#adc6ff",
+                            "on-secondary-container": "#fefcff",
+                            "surface-bright": "#f8f9ff",
+                            "surface-dim": "#cbdbf5",
+                            "on-primary-fixed": "#131b2e",
+                            "primary-fixed-dim": "#bec6e0",
+                            "inverse-on-surface": "#eaf1ff",
+                            "on-primary": "#ffffff",
+                            "on-surface-variant": "#45464d",
+                            "on-surface": "#0b1c30",
+                            "on-background": "#0b1c30",
+                            "inverse-primary": "#bec6e0",
+                            "on-primary-container": "#7c839b",
+                            "secondary": "#0058be",
+                            "surface-variant": "#d3e4fe",
+                            "surface-container-high": "#dce9ff",
+                            "on-tertiary-container": "#98805d",
+                            "on-error-container": "#93000a",
+                            "surface-container": "#e5eeff",
+                            "error-container": "#ffdad6",
+                            "on-secondary-fixed": "#001a42",
+                            "on-primary-fixed-variant": "#3f465c",
+                            "primary": "#000000",
+                            "surface-container-highest": "#d3e4fe",
+                            "primary-container": "#131b2e",
+                            "on-secondary": "#ffffff",
+                            "background": "#f8f9ff",
+                            "primary-fixed": "#dae2fd"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-sm": "8px",
+                            "stack-md": "16px",
+                            "stack-lg": "32px",
+                            "unit": "4px",
+                            "section-gap": "64px",
+                            "margin-page": "40px",
+                            "container-max": "1280px",
+                            "gutter": "24px"
+                    },
+                    "fontFamily": {
+                            "label-md": [
+                                    "Geist"
+                            ],
+                            "body-sm": [
+                                    "Inter"
+                            ],
+                            "body-lg": [
+                                    "Inter"
+                            ],
+                            "headline-md": [
+                                    "Geist"
+                            ],
+                            "label-caps": [
+                                    "Geist"
+                            ],
+                            "headline-lg": [
+                                    "Geist"
+                            ],
+                            "display-lg": [
+                                    "Geist"
+                            ],
+                            "body-md": [
+                                    "Inter"
+                            ],
+                            "display-lg-mobile": [
+                                    "Geist"
+                            ]
+                    },
+                    "fontSize": {
+                            "label-md": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "body-sm": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "body-lg": [
+                                    "18px",
+                                    {
+                                            "lineHeight": "28px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "headline-md": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "letterSpacing": "-0.01em",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "label-caps": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "16px",
+                                            "letterSpacing": "0.05em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "headline-lg": [
+                                    "30px",
+                                    {
+                                            "lineHeight": "38px",
+                                            "letterSpacing": "-0.01em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "display-lg": [
+                                    "48px",
+                                    {
+                                            "lineHeight": "56px",
+                                            "letterSpacing": "-0.02em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "body-md": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "display-lg-mobile": [
+                                    "32px",
+                                    {
+                                            "lineHeight": "40px",
+                                            "letterSpacing": "-0.02em",
+                                            "fontWeight": "600"
+                                    }
+                            ]
+                    }
+            },
+                },
+            }
+    </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Geist:wght@400;500;600;700;800&display=swap');
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .card-border {
+            border: 1px solid #E2E8F0;
+        }
+        
+        .ai-accent-border {
+            border-left: 2px solid #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- {{DATA:COMPONENTS:COMPONENTS_4:SideNavBar}} -->
+<!-- The intent of this page is 'Dashboard', so the first tab is active. -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col py-stack-lg z-50">
+<div class="px-gutter mb-stack-lg flex items-center gap-stack-md">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="insights" style="font-size: 20px;">insights</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-extrabold text-primary">InsightPilot</h1>
+<p class="font-label-md text-label-md text-on-surface-variant text-xs">Decision Intelligence</p>
+</div>
+</div>
+<div class="flex-1 px-stack-sm flex flex-col gap-unit">
+<!-- Active Tab: Dashboard -->
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-secondary font-bold border-r-2 border-secondary bg-surface-container-low transition-colors active" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors opacity-90 scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-md text-label-md">Workspaces</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors opacity-90 scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md">Analysis History</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors opacity-90 scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="flex items-center gap-stack-md px-stack-md py-3 rounded-lg text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-colors opacity-90 scale-[0.99] duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<div class="px-gutter mt-auto">
+<button class="w-full bg-primary text-on-primary py-2 px-4 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Analysis
+            </button>
+</div>
+</nav>
+<!-- {{DATA:COMPONENTS:COMPONENTS_4:TopNavBar}} -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-surface/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-gutter w-[calc(100%-16rem)]">
+<div class="flex items-center gap-stack-lg">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">InsightPilot</h2>
+<nav class="hidden md:flex gap-stack-lg h-full items-center">
+<!-- Intent here doesn't directly map, leaving first as neutral/active for this scope or generic inactive since SideNav drives -->
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 h-full flex items-center" href="#">Global Strategy</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all h-full flex items-center" href="#">Q3 Forecast</a>
+</nav>
+</div>
+<div class="flex items-center gap-stack-md">
+<!-- Search placeholder on right as requested by search_bar:"on_right" -->
+<div class="relative focus:ring-2 ring-secondary/10 rounded-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container rounded-full border-none focus:ring-1 focus:ring-secondary text-sm w-48" placeholder="Ask AI..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img alt="Executive User Profile" class="w-full h-full object-cover" data-alt="A close up, professional corporate headshot of a diverse executive looking confidently at the camera, set against a clean, bright, minimalist office background. Soft natural lighting emphasizes a calm and decisive mood, aligning with a premium business intelligence software aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7zhrT7PA6dYAmBTESh3paEBKpPT9ALQfhkpfbseggdXJqlsZNTvCX8o5RMW7WZlyKRX3dauqujIZHlwaBM7D4swnAaW-FBiVSxXHz5WcnzyJQ-o8A0M4nEgUDTQ6faVOHX799JavsvVPvVx3U48IQKxhWrPyPrJOxXW7G-7AePs4Af5c9zceU9mVyclITI98Z-3eO7FGZsm_9XLVC03k877u46rG0mM4ecRyXaI5QaSd5LUnjXaBykg"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 px-margin-page pb-section-gap max-w-container-max mx-auto flex flex-col gap-section-gap">
+<!-- Top Section: Pulse & Hero Brief -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Business Pulse Scorecard (Col 1-3) -->
+<div class="lg:col-span-3 bg-surface rounded-lg card-border p-gutter flex flex-col justify-between hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-shadow">
+<div>
+<div class="flex justify-between items-start mb-stack-sm">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">Business Pulse</h3>
+<span class="material-symbols-outlined text-secondary" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="flex items-baseline gap-2 mb-unit">
+<span class="font-display-lg text-display-lg text-on-surface">87</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/100</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="font-label-md text-label-md text-emerald-700">Healthy</span>
+</div>
+</div>
+<div class="mt-stack-md pt-stack-md border-t border-outline-variant/30 space-y-2">
+<div class="flex justify-between text-sm">
+<span class="font-body-sm text-body-sm text-on-surface-variant">AI Confidence</span>
+<span class="font-label-md text-label-md text-on-surface">High (92%)</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="font-body-sm text-body-sm text-on-surface-variant">30-Day Trend</span>
+<div class="flex items-center text-emerald-600 gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md">+4.2%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Today's Brief (Hero) (Col 4-12) -->
+<div class="lg:col-span-9 bg-[#F0F7FF] rounded-lg card-border ai-accent-border p-[32px] hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-shadow">
+<div class="flex items-center gap-2 mb-stack-md">
+<span class="material-symbols-outlined text-secondary" data-icon="auto_awesome">auto_awesome</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Executive Brief</h2>
+<span class="ml-auto font-label-caps text-label-caps bg-secondary/10 text-secondary px-3 py-1 rounded-full">Generated just now</span>
+</div>
+<div class="prose prose-sm max-w-none text-on-surface font-body-lg text-body-lg leading-relaxed space-y-4">
+<p>
+                        Overall business health is strong, driven by a <strong>12% outperformance in Q3 Enterprise Sales</strong> across the EMEA region. The recent pricing structural changes have stabilized churn rates, currently resting below the 2% threshold. 
+                    </p>
+<p>
+                        However, operational costs in the APAC sector require attention. Logistics overhead has increased by 4.5% month-over-month due to supply chain friction. <strong>Strategic Priority:</strong> Reallocate Q4 marketing surplus to accelerate the automated onboarding initiative to offset these margin pressures.
+                    </p>
+</div>
+<div class="mt-stack-lg flex gap-stack-md">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded flex items-center gap-2">
+                        View Full Analysis
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="border border-outline-variant bg-transparent text-on-surface font-label-md text-label-md px-4 py-2 rounded hover:bg-surface-container transition-colors">
+                        Share Brief
+                    </button>
+</div>
+</div>
+</section>
+<!-- SECTION 1: Business Signals -->
+<section>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-stack-md">
+<!-- Revenue -->
+<div class="bg-surface rounded-lg card-border p-stack-md flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-unit">Revenue</span>
+<div class="flex items-center gap-2 mt-auto">
+<span class="material-symbols-outlined text-emerald-600 text-sm" data-icon="arrow_upward">arrow_upward</span>
+<span class="font-label-md text-label-md text-emerald-700">+18%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-auto">Healthy</span>
+</div>
+</div>
+<!-- Profit -->
+<div class="bg-surface rounded-lg card-border p-stack-md flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-unit">Profit</span>
+<div class="flex items-center gap-2 mt-auto">
+<span class="material-symbols-outlined text-emerald-600 text-sm" data-icon="arrow_upward">arrow_upward</span>
+<span class="font-label-md text-label-md text-emerald-700">+6%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-auto">Stable</span>
+</div>
+</div>
+<!-- Customer Health -->
+<div class="bg-surface rounded-lg card-border p-stack-md flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-unit">Customer Health</span>
+<div class="flex items-center gap-2 mt-auto">
+<span class="material-symbols-outlined text-orange-600 text-sm" data-icon="arrow_downward">arrow_downward</span>
+<span class="font-label-md text-label-md text-orange-700">-2.4%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-auto">Needs Attention</span>
+</div>
+</div>
+<!-- Growth -->
+<div class="bg-surface rounded-lg card-border p-stack-md flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-unit">Growth</span>
+<div class="flex items-center gap-2 mt-auto">
+<span class="material-symbols-outlined text-emerald-600 text-sm" data-icon="arrow_upward">arrow_upward</span>
+<span class="font-label-md text-label-md text-emerald-700">+11%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-auto">Strong</span>
+</div>
+</div>
+<!-- Risk Level -->
+<div class="bg-surface rounded-lg card-border p-stack-md flex flex-col justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-unit">Risk Level</span>
+<div class="flex items-center gap-2 mt-auto">
+<span class="material-symbols-outlined text-amber-600 text-sm" data-icon="warning">warning</span>
+<span class="font-label-md text-label-md text-amber-700">Medium</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-auto">Monitoring</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Hero & Zero -->
+<section>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Hero Card -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col">
+<div class="flex items-center gap-2 mb-stack-md">
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700">
+<span class="material-symbols-outlined text-sm" data-icon="workspace_premium">workspace_premium</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Top Performer: Electronics</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                Electronics category is showing the highest repeat purchase rate this quarter, driving overall revenue growth.
+            </p>
+<div class="mt-auto bg-surface-container-low p-stack-md rounded-lg border border-outline-variant/30 flex items-start gap-stack-sm">
+<span class="material-symbols-outlined text-secondary text-sm mt-0.5" data-icon="lightbulb">lightbulb</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block mb-1">Recommendation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Increase inventory levels for top 5 electronics SKUs ahead of Q4.</span>
+</div>
+</div>
+</div>
+<!-- Zero Card -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col">
+<div class="flex items-center gap-2 mb-stack-md">
+<div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-700">
+<span class="material-symbols-outlined text-sm" data-icon="trending_down">trending_down</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Underperforming: Furniture</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">
+                Furniture margins have decreased by 4% due to rising freight costs and increased return rates in the EU market.
+            </p>
+<div class="mt-auto bg-surface-container-low p-stack-md rounded-lg border border-outline-variant/30 flex items-start gap-stack-sm">
+<span class="material-symbols-outlined text-secondary text-sm mt-0.5" data-icon="lightbulb">lightbulb</span>
+<div>
+<span class="font-label-md text-label-md text-on-surface block mb-1">Recommendation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Review pricing strategy and negotiate new freight contracts immediately.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Smart Charts -->
+<section>
+<div class="flex items-center justify-between mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Supporting Analytics</h2>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Revenue Trend -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col h-72">
+<div class="flex justify-between items-center mb-stack-md">
+<h4 class="font-label-md text-label-md text-on-surface">Revenue Trend</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 border-b border-l border-outline-variant/30 relative flex items-end">
+<!-- Abstract chart representation -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 50">
+<path d="M0,45 Q10,30 20,40 T40,20 T60,25 T80,10 T100,5" fill="none" stroke="#2170e4" stroke-width="2"></path>
+<path d="M0,50 L0,45 Q10,30 20,40 T40,20 T60,25 T80,10 T100,5 L100,50 Z" fill="#2170e4" fill-opacity="0.1"></path>
+</svg>
+</div>
+</div>
+<!-- Regional Performance -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col h-72">
+<div class="flex justify-between items-center mb-stack-md">
+<h4 class="font-label-md text-label-md text-on-surface">Regional Performance</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 border-b border-l border-outline-variant/30 flex items-end justify-around px-4 pb-0">
+<!-- Abstract bar chart -->
+<div class="w-8 bg-secondary rounded-t-sm" style="height: 80%;"></div>
+<div class="w-8 bg-secondary/60 rounded-t-sm" style="height: 60%;"></div>
+<div class="w-8 bg-secondary/40 rounded-t-sm" style="height: 45%;"></div>
+<div class="w-8 bg-secondary/20 rounded-t-sm" style="height: 30%;"></div>
+</div>
+</div>
+<!-- Top Products -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col h-72">
+<div class="flex justify-between items-center mb-stack-md">
+<h4 class="font-label-md text-label-md text-on-surface">Top Products</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 flex flex-col justify-center gap-4">
+<!-- Abstract horizontal bar chart -->
+<div class="w-full">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>Product A</span><span>45%</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-secondary w-[45%]"></div></div>
+</div>
+<div class="w-full">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>Product B</span><span>30%</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-secondary/70 w-[30%]"></div></div>
+</div>
+<div class="w-full">
+<div class="flex justify-between text-xs text-on-surface-variant mb-1"><span>Product C</span><span>15%</span></div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-secondary/50 w-[15%]"></div></div>
+</div>
+</div>
+</div>
+<!-- Profit Distribution -->
+<div class="bg-surface rounded-lg card-border p-gutter flex flex-col h-72">
+<div class="flex justify-between items-center mb-stack-md">
+<h4 class="font-label-md text-label-md text-on-surface">Profit Distribution</h4>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Abstract donut chart -->
+<div class="w-32 h-32 rounded-full border-[16px] border-surface-container relative">
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-secondary border-t-transparent border-l-transparent transform rotate-45"></div>
+<div class="absolute inset-[-16px] rounded-full border-[16px] border-secondary/60 border-b-transparent border-r-transparent transform -rotate-45"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: AI Recommendations -->
+<section>
+<div class="bg-surface rounded-lg card-border overflow-hidden">
+<div class="p-gutter border-b border-outline-variant/50 flex items-center gap-2 bg-surface-container-low">
+<span class="material-symbols-outlined text-secondary" data-icon="assistant">assistant</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Prioritized Recommendations</h2>
+</div>
+<div class="flex flex-col divide-y divide-outline-variant/30">
+<!-- Recommendation 1 -->
+<div class="p-gutter flex flex-col md:flex-row gap-stack-md items-start">
+<div class="w-full md:w-32 flex-shrink-0">
+<span class="inline-block px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-700 border border-red-200">High Priority</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-1">Improve customer retention campaign</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Churn risk detected in mid-market segment. Proactive outreach recommended.</p>
+</div>
+<div class="flex flex-col gap-1 w-full md:w-48 flex-shrink-0">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Expected Impact:</span>
+<span class="font-medium text-emerald-600">High</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">AI Confidence:</span>
+<span class="font-medium text-on-surface">94%</span>
+</div>
+</div>
+</div>
+<!-- Recommendation 2 -->
+<div class="p-gutter flex flex-col md:flex-row gap-stack-md items-start">
+<div class="w-full md:w-32 flex-shrink-0">
+<span class="inline-block px-2 py-1 rounded text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Medium Priority</span>
+</div>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-1">Optimize supply chain logistics</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Route inefficiencies identified in APAC region contributing to margin compression.</p>
+</div>
+<div class="flex flex-col gap-1 w-full md:w-48 flex-shrink-0">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Expected Impact:</span>
+<span class="font-medium text-emerald-600">Medium</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">AI Confidence:</span>
+<span class="font-medium text-on-surface">82%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: AI Analyst -->
+<section>
+<div class="bg-surface rounded-lg card-border p-gutter bg-gradient-to-b from-surface to-surface-container-low/50">
+<div class="flex items-center gap-2 mb-stack-lg">
+<span class="material-symbols-outlined text-secondary" data-icon="forum">forum</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">AI Analyst</h2>
+</div>
+<div class="flex flex-wrap gap-2 mb-stack-md">
+<button class="px-3 py-1.5 rounded-full border border-outline-variant/50 bg-surface text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container hover:text-on-surface transition-colors">
+                "Why did profit decrease?"
+            </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant/50 bg-surface text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container hover:text-on-surface transition-colors">
+                "Compare with last month"
+            </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant/50 bg-surface text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container hover:text-on-surface transition-colors">
+                "Show unusual trends"
+            </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant/50 bg-surface text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container hover:text-on-surface transition-colors">
+                "Explain customer retention"
+            </button>
+</div>
+<div class="relative">
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-4 pr-12 py-3 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all font-body-md text-on-surface shadow-sm" placeholder="Ask a follow-up question..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-md bg-secondary text-on-primary hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- SECTION 6: Analysis Timeline -->
+<section class="border-t border-outline-variant/30 pt-stack-lg pb-stack-md">
+<div class="flex flex-col md:flex-row items-center justify-between gap-stack-md">
+<div class="flex flex-col items-center text-center max-w-[120px]">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Dataset Uploaded</span>
+</div>
+<div class="hidden md:block flex-1 h-[1px] bg-outline-variant/50 mx-4"></div>
+<div class="flex flex-col items-center text-center max-w-[120px]">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Validated</span>
+</div>
+<div class="hidden md:block flex-1 h-[1px] bg-outline-variant/50 mx-4"></div>
+<div class="flex flex-col items-center text-center max-w-[120px]">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Insights Generated</span>
+</div>
+<div class="hidden md:block flex-1 h-[1px] bg-outline-variant/50 mx-4"></div>
+<div class="flex flex-col items-center text-center max-w-[120px]">
+<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Recommendations Ready</span>
+</div>
+<div class="hidden md:block flex-1 h-[1px] bg-secondary text-secondary mx-4 relative">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-secondary"></div>
+</div>
+<div class="flex flex-col items-center text-center max-w-[120px]">
+<div class="w-8 h-8 rounded-full bg-secondary text-on-primary flex items-center justify-center mb-2 shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<span class="font-label-caps text-label-caps text-secondary font-bold">Brief Generated</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

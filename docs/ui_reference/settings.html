@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - InsightPilot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#c6c6cd",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dce9ff",
+                        "tertiary": "#000000",
+                        "secondary": "#0058be",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-surface-variant": "#45464d",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-container": "#7c839b",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "outline": "#76777d",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#271901",
+                        "primary-fixed": "#dae2fd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001a42",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "secondary-container": "#2170e4",
+                        "primary-container": "#131b2e",
+                        "surface-container-low": "#eff4ff",
+                        "background": "#f8f9ff",
+                        "surface-tint": "#565e74",
+                        "on-tertiary-container": "#98805d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary": "#000000",
+                        "inverse-primary": "#bec6e0",
+                        "inverse-surface": "#213145",
+                        "surface-variant": "#d3e4fe",
+                        "on-tertiary-fixed": "#271901",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary-fixed": "#131b2e",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "tertiary-fixed-dim": "#dec29a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-page": "40px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "section-gap": "64px",
+                        "unit": "4px",
+                        "stack-md": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "display-lg-mobile": ["Geist"],
+                        "label-md": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            color: #0b1c30;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, h4, h5, h6, .geist {
+            font-family: 'Geist', sans-serif;
+        }
+        
+        /* Custom Scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #000000;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #000000;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+        .toggle-label {
+            width: 44px;
+            height: 24px;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* Glassmorphism for TopNav */
+        .glass-nav {
+            background: rgba(248, 249, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        /* Form Element Focus Rings */
+        .form-focus:focus {
+            outline: none;
+            border-color: #0058be;
+            box-shadow: 0 0 0 3px rgba(0, 88, 190, 0.1);
+        }
+    </style>
+</head>
+<body class="flex bg-background text-on-background min-h-screen">
+<!-- SideNavBar (Shared Component) -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-background border-r border-outline-variant dark:border-outline flex flex-col h-full py-stack-lg z-50">
+<!-- Brand / Header -->
+<div class="px-gutter mb-stack-lg flex items-center space-x-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-extrabold text-primary dark:text-primary-fixed leading-tight">InsightPilot</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mt-1">Decision Intelligence</p>
+</div>
+</div>
+<!-- CTA -->
+<div class="px-gutter mb-stack-lg">
+<button class="w-full bg-primary text-white font-label-md text-label-md py-2 px-4 rounded-lg hover:bg-surface-tint transition-colors flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>New Analysis</span>
+</button>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 px-4 space-y-1">
+<a class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-lg">folder_open</span>
+<span>Workspaces</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+<span>Analysis History</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest transition-colors font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-lg">assessment</span>
+<span>Reports</span>
+</a>
+<!-- ACTIVE ITEM: Settings -->
+<a class="flex items-center space-x-3 px-4 py-2.5 rounded-lg text-secondary font-bold border-r-2 border-secondary bg-surface-container-low dark:bg-surface-container-high opacity-90 scale-[0.99] duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- User Profile (Bottom) -->
+<div class="px-gutter mt-auto pt-4 border-t border-outline-variant">
+<div class="flex items-center space-x-3 cursor-pointer hover:bg-surface-container p-2 -mx-2 rounded-lg transition-colors">
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of an executive user in a modern office setting, soft natural lighting, high resolution, minimalist background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQOajjtPI9GNWDa1vASNmk9CrVu_J5bDipYoDcf6ajCqNpGt4s9oOLB8LKAwOtFXl0TX15VlgCgsVNAYFA6RNyR3CaebiDBS8_FA6XtT2I8US9gZkOvaa4bo3vYnZSDGjXIPya8vLvCnFvI51jtZZaJohsD6aADEcIpbzUzZNkiM8mnM0tCk4LF-RHBk0LzDe8fEg3P9rD0-7tMiERLtaEOXVSWQ42aprPCWjr97aicM6-EqcXgIMoRQ"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Sarah Jenkins</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">sarah@acmecorp.com</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 glass-nav border-b border-outline-variant dark:border-outline flex justify-between items-center px-gutter transition-all focus-within:ring-2 focus-within:ring-secondary/10">
+<!-- Navigation Links -->
+<div class="flex space-x-6 h-full items-end pb-1">
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all pb-3" href="#">Global Strategy</a>
+<a class="font-label-md text-label-md text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-all pb-3" href="#">Q3 Forecast</a>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center space-x-4">
+<!-- Search (on_right) -->
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface text-body-sm font-body-sm border border-outline-variant rounded-full w-48 form-focus transition-all" placeholder="Search..." type="text"/>
+</div>
+<!-- Trailing Icons -->
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<!-- Profile Image -->
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A high-quality executive user profile image, minimalist modern aesthetic, subtle lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNlvNObynUKSU7rVKw3q-1eohj88pQpaXw2C6AFY0EugTNvEuSEhxkUlhUUOuGVYlbrScp96cL56riZycVnkl1Z0ooHLLQ_N3xZIitURYf5OhPNJkCvniI9HYtz_4LHbQ2gWKHuzSaQRy9-nB4wPY039Nhi9e1vlAR6iycOhfMk8UWFEaFKRw4CA51sAp5NILKP9yEJLLBZZbdA4LuuYwaS9McAKOZfEoT_iuah5SIOYM6w0ipTsMg3A"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 mt-16 p-margin-page overflow-y-auto">
+<div class="max-w-4xl mx-auto w-full">
+<!-- Page Header -->
+<div class="mb-stack-lg">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2 tracking-tight">Settings</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage your workspace preferences and application behavior.</p>
+</div>
+<!-- Settings Cards Stack -->
+<div class="space-y-stack-lg pb-section-gap">
+<!-- 1. General Settings Card -->
+<section class="bg-white border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-6 py-5 border-b border-outline-variant bg-surface-bright">
+<h3 class="font-headline-md text-headline-md text-on-surface">General</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Basic configuration for your current workspace.</p>
+</div>
+<div class="p-6 space-y-6">
+<!-- Field: Workspace Name -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Workspace Name</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">A unique identifier for your project.</p>
+</div>
+<div class="md:col-span-2">
+<input class="w-full max-w-md px-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface form-focus bg-surface-lowest" type="text" value="Global Strategy"/>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Default Landing Page -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Default Landing Page</label>
+</div>
+<div class="md:col-span-2 relative max-w-md">
+<select class="w-full px-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface form-focus bg-surface-lowest appearance-none">
+<option>Workspace Dashboard</option>
+<option>Recent Analysis</option>
+<option>Reports Overview</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Language -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Language</label>
+</div>
+<div class="md:col-span-2 relative max-w-md">
+<select class="w-full px-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface form-focus bg-surface-lowest appearance-none">
+<option>English (US)</option>
+<option>English (UK)</option>
+<option>French</option>
+<option>German</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. AI Preferences Card -->
+<section class="bg-[#F0F7FF] border border-outline-variant rounded-xl overflow-hidden relative shadow-sm">
+<!-- AI Accent Border -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="px-6 py-5 border-b border-outline-variant bg-white/50 backdrop-blur-sm">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary text-lg">auto_awesome</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Preferences</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Configure how InsightPilot's intelligence engine responds.</p>
+</div>
+<div class="p-6 space-y-6 bg-white/80">
+<!-- Field: Preferred AI Provider -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Preferred Engine</label>
+</div>
+<div class="md:col-span-2">
+<div class="flex items-center space-x-3 max-w-md">
+<div class="relative flex-1 opacity-60">
+<select class="w-full px-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface bg-surface cursor-not-allowed appearance-none" disabled="">
+<option>InsightPilot Core (Default)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full font-label-caps text-[10px] uppercase font-semibold bg-surface-variant text-on-surface-variant border border-outline-variant/30">
+                                            Coming Soon
+                                        </span>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Analysis Depth -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Analysis Depth</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Deeper analysis takes longer to process.</p>
+</div>
+<div class="md:col-span-2">
+<div class="inline-flex p-1 bg-surface-container rounded-lg border border-outline-variant/50 w-full max-w-md">
+<button class="flex-1 py-1.5 px-3 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors">Standard</button>
+<button class="flex-1 py-1.5 px-3 text-sm font-medium rounded-md bg-white shadow-sm border border-outline-variant/30 text-on-surface">Deep</button>
+<button class="flex-1 py-1.5 px-3 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors">Comprehensive</button>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Response Style -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+<div class="md:col-span-1 pt-2">
+<label class="font-label-md text-label-md text-on-surface">Response Style</label>
+</div>
+<div class="md:col-span-2 relative max-w-md">
+<select class="w-full px-3 py-2 border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface form-focus bg-surface-lowest appearance-none">
+<option>Professional Executive</option>
+<option>Technical / Developer</option>
+<option>Concise Summary</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Suggested Questions -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-label-md text-label-md text-on-surface">Suggested Questions</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">AI will predict follow-up questions at the end of reports.</p>
+</div>
+<div class="relative inline-block w-11 h-6 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="ai-suggest" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="ai-suggest"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. Privacy & Data Card -->
+<section class="bg-white border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-6 py-5 border-b border-outline-variant bg-surface-bright">
+<h3 class="font-headline-md text-headline-md text-on-surface">Privacy &amp; Data</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Manage your data retention and privacy settings.</p>
+</div>
+<div class="p-6 space-y-6">
+<!-- Field: Anonymous Session ID -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-label-md text-label-md text-on-surface">Anonymous Session ID</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Masks your specific user ID from analytic logs.</p>
+</div>
+<div class="relative inline-block w-11 h-6 align-middle select-none">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 opacity-0" id="anon-session" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="anon-session"></label>
+</div>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Clear History -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-label-md text-label-md text-on-surface">Analysis History</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Permanently remove all past queries from this device.</p>
+</div>
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors">
+                                    Clear All
+                                </button>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Field: Export Data -->
+<div class="flex items-center justify-between">
+<div>
+<label class="font-label-md text-label-md text-on-surface">Export Data</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Download a structured archive of your workspace data.</p>
+</div>
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-sm font-medium text-on-surface hover:bg-surface-container transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Download JSON/CSV</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 7. Danger Zone Card -->
+<section class="bg-white border border-error-container rounded-xl overflow-hidden mt-section-gap">
+<div class="px-6 py-5 border-b border-error-container bg-error-container/20">
+<h3 class="font-headline-md text-headline-md text-error">Danger Zone</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Irreversible actions. Proceed with caution.</p>
+</div>
+<div class="p-6 space-y-6">
+<!-- Delete Workspace -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<label class="font-label-md text-label-md text-on-surface font-semibold">Delete Current Workspace</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Once you delete a workspace, there is no going back. Please be certain.</p>
+</div>
+<button class="px-4 py-2 bg-error text-white rounded-lg text-sm font-medium hover:bg-error/90 transition-colors whitespace-nowrap">
+                                    Delete Workspace
+                                </button>
+</div>
+<hr class="border-outline-variant/50"/>
+<!-- Reset App -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<label class="font-label-md text-label-md text-on-surface font-semibold">Reset Application</label>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">Clear all local storage, cache, and preferences on this device.</p>
+</div>
+<button class="px-4 py-2 border border-error text-error rounded-lg text-sm font-medium hover:bg-error-container/30 transition-colors whitespace-nowrap">
+                                    Reset Application
+                                </button>
+</div>
+</div>
+</section>
+<!-- Footer / About links -->
+<div class="pt-8 pb-12 flex flex-col md:flex-row items-center justify-between text-sm text-on-surface-variant">
+<p class="font-label-caps tracking-widest text-[11px] uppercase mb-4 md:mb-0">InsightPilot v1.2.4</p>
+<div class="flex space-x-6">
+<a class="hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

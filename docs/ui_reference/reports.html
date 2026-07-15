@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Reports - InsightPilot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Assuming Geist font is locally available or via a specific CDN for this environment. 
+         Falling back to Inter/system sans if not perfectly loaded, but using the defined config names. -->
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap'); /* Using Space Grotesk as a stand-in for Geist if unavailable in standard CDNs for visual approximation of technical/display font */
+        @font-face {
+            font-family: 'Geist';
+            src: local('Space Grotesk'), local('Helvetica Neue'), sans-serif; 
+            /* Fallback strategy for the specific 'Geist' name in config */
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary-container": "#98805d",
+                        "secondary": "#0058be",
+                        "on-primary-container": "#7c839b",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#bec6e0",
+                        "on-surface": "#0b1c30",
+                        "primary-fixed": "#dae2fd",
+                        "background": "#f8f9ff",
+                        "primary-container": "#131b2e",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary": "#000000",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "surface-container": "#e5eeff",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-surface": "#213145",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "secondary-container": "#2170e4",
+                        "on-tertiary-fixed": "#271901",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565e74",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-surface-variant": "#45464d",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-low": "#eff4ff",
+                        "surface": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "outline": "#76777d",
+                        "tertiary-container": "#271901",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "secondary-fixed": "#d8e2ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "section-gap": "64px",
+                        "margin-page": "40px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "display-lg-mobile": ["Geist"],
+                        "label-caps": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Geist"],
+                        "label-md": ["Geist"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- Shell Layout -->
+<div class="flex h-screen w-full">
+<!-- SideNavBar (Shared Component) -->
+<nav class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex flex-col h-full py-stack-lg z-20">
+<!-- Brand Logo Header -->
+<div class="px-gutter mb-stack-lg flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">InsightPilot</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80">Enterprise AI</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 px-4 flex flex-col gap-2">
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Workspaces (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">work_outline</span>
+<span>Workspaces</span>
+</a>
+<!-- Analysis History (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>Analysis History</span>
+</a>
+<!-- Reports (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary font-bold border-r-2 border-secondary bg-surface-variant/30 font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assessment</span>
+<span>Reports</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-variant/50 transition-colors font-body-md text-body-md mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-4 mt-stack-md">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Analysis
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col h-screen relative">
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-surface/80 backdrop-blur-md border-b border-outline-variant flex justify-between items-center px-gutter z-10">
+<!-- Search (on_left) -->
+<div class="flex-1 flex items-center">
+<div class="relative w-96 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/10 transition-all" placeholder="Search reports, workspaces..." type="text"/>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-variant/50">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Professional headshot of a business user in a well-lit modern office space, soft focus background, exuding competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf4Gm41eV6k0Mznja67o2brS0ulU9Wi0bjw89nSr1dZvupCeXMtV29-UshSoCAix5vvzGRm73JAtLrXhtmg-wxyQ7oM8RsFDjEmpgDI3iRmtcn5ya_a9lHtkB1PTwjt5BRfIV2hQSkY87bn03moH_juQ3Z_x4gduZzeOTv5QGyhYz37OeOOmaXJH17KeFt8i4aUe1KxTQwHduFQ66cnyBmmGgf7wYTfx0av4gwXJtea9RRq7fdqot4qg"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Page Content -->
+<div class="flex-1 overflow-y-auto mt-16 pt-margin-page pb-section-gap px-margin-page">
+<div class="max-w-[1280px] mx-auto w-full flex flex-col gap-section-gap">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2 tracking-tight">Executive Reports</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Generate, organize, preview, and export AI-generated business reports.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2.5 rounded-lg border border-outline-variant bg-transparent text-secondary hover:bg-surface-variant/50 transition-colors font-label-md text-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">ios_share</span>
+                                Export Selected
+                            </button>
+<button class="px-4 py-2.5 rounded-lg bg-primary text-on-primary hover:bg-primary/90 transition-colors font-label-md text-label-md flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">docs_add_on</span>
+                                Generate Report
+                            </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-2">Total Reports</span>
+<div class="font-display-lg text-display-lg text-on-surface">42</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-2">Generated This Month</span>
+<div class="font-display-lg text-display-lg text-on-surface flex items-baseline gap-2">
+                                12
+                                <span class="text-sm text-[#10b981] flex items-center font-label-md"><span class="material-symbols-outlined text-[16px]">trending_up</span> +3</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-2">Avg Business Pulse</span>
+<div class="font-display-lg text-display-lg text-on-surface flex items-end gap-1">
+                                84<span class="text-xl text-on-surface-variant font-headline-md pb-1">/100</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant mb-2">Latest Report</span>
+<div class="font-headline-md text-headline-md text-on-surface truncate" title="Q3 Revenue Deep Dive">Q3 Revenue Deep Dive</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1 flex items-center gap-1 cursor-pointer hover:underline">
+                                View now <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</span>
+</div>
+</div>
+<!-- Main Grid (Reports List + Sidebar) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Recent Reports List (Spans 8) -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Reports</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline">View All</button>
+</div>
+<!-- AI Insight Card Pattern 1 -->
+<div class="bg-[#F0F7FF] border border-outline-variant border-l-4 border-l-[#3B82F6] rounded-lg p-6 hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-headline-md text-headline-md text-on-surface">Q4 Sales Forecast &amp; Risk Analysis</h4>
+<span class="bg-white border border-[#CBD5E1] text-[#475569] px-2 py-0.5 rounded-full font-label-caps text-[10px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-[#10b981]">check_circle</span> Ready
+                                            </span>
+</div>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">dataset</span> Sales_2023.csv</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Oct 24, 2023</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">auto_awesome</span> 94% Confidence</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">description</span> 14 Pages</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Business Pulse</div>
+<div class="flex items-center gap-1 text-[#10b981] font-bold text-lg">
+<span class="material-symbols-outlined">trending_up</span> 88
+                                        </div>
+</div>
+</div>
+<div class="bg-white/60 rounded p-4 mb-5 border border-white/40">
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+<strong class="text-on-surface">AI Summary:</strong> Based on historical Q4 performance and current market indicators, projected revenue is expected to exceed targets by 12%. However, supply chain volatility in the APAC region introduces a moderate risk factor that requires strategic buffer inventory allocation.
+                                    </p>
+</div>
+<div class="flex items-center gap-3 border-t border-outline-variant/50 pt-4">
+<button class="px-4 py-2 bg-white border border-outline-variant rounded-lg font-label-md text-label-md hover:bg-surface-variant/30 transition-colors text-on-surface">Preview</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span> PDF
+                                    </button>
+<div class="flex-1"></div>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full hover:bg-surface-variant/50" title="Duplicate">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-error rounded-full hover:bg-error-container/50 transition-colors" title="Delete">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- AI Insight Card Pattern 2 (Generating State) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 relative overflow-hidden">
+<!-- Subtle progress bar at top -->
+<div class="absolute top-0 left-0 h-[2px] bg-surface-variant w-full">
+<div class="h-full bg-secondary w-1/3 animate-pulse"></div>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h4 class="font-headline-md text-headline-md text-on-surface text-opacity-70">Marketing Campaign ROI Q3</h4>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full font-label-caps text-[10px] flex items-center gap-1 animate-pulse">
+<span class="material-symbols-outlined text-[12px]">pending</span> Generating...
+                                            </span>
+</div>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-2 font-body-sm text-body-sm text-on-surface-variant opacity-70">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">dataset</span> Q3_Marketing_Spend.csv</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> Just now</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">donut_large</span> Analyzing...</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container/30 rounded p-4 mb-5 border border-transparent flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary animate-spin">sync</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">InsightPilot is synthesizing data, generating visualizations, and writing the executive summary. This usually takes about 45 seconds.</p>
+</div>
+<div class="flex items-center gap-3 border-t border-outline-variant/50 pt-4 opacity-50 pointer-events-none">
+<button class="px-4 py-2 bg-white border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface">Preview</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar (Spans 4) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Recent Exports List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider font-bold">Recent Exports</h4>
+<ul class="flex flex-col gap-3">
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-[#fef2f2] text-[#ef4444] flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-secondary transition-colors">Q3 Revenue.pdf</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Today, 10:42 AM</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-[18px]">download</span>
+</li>
+<li class="flex items-center justify-between group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-[#f0fdf4] text-[#10b981] flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">table_view</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-secondary transition-colors">Sales_Data_Raw.csv</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Yesterday</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity text-[18px]">download</span>
+</li>
+</ul>
+</div>
+<!-- Pinned Reports -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">push_pin</span> Pinned Reports
+                                </h4>
+<div class="flex flex-col gap-2">
+<a class="block p-3 rounded border border-outline-variant/50 hover:bg-surface-variant/30 transition-colors" href="#">
+<div class="font-label-md text-label-md text-on-surface mb-1">Board Meeting Deck - Sep 2023</div>
+<div class="font-body-sm text-[12px] text-on-surface-variant">Last updated 14 days ago</div>
+</a>
+</div>
+</div>
+<!-- Quick Export Formats -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-5">
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-4 uppercase tracking-wider font-bold">Quick Formats</h4>
+<div class="grid grid-cols-2 gap-2">
+<button class="p-3 border border-outline-variant rounded flex flex-col items-center justify-center gap-2 hover:border-secondary hover:bg-surface-variant/20 transition-all text-on-surface group">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant group-hover:text-secondary">picture_as_pdf</span>
+<span class="font-label-caps text-[11px]">PDF Document</span>
+</button>
+<button class="p-3 border border-outline-variant border-dashed rounded flex flex-col items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant">slideshow</span>
+<span class="font-label-caps text-[11px]">PowerPoint</span>
+<span class="text-[9px] bg-surface-variant px-1 rounded">Soon</span>
+</button>
+<button class="p-3 border border-outline-variant border-dashed rounded flex flex-col items-center justify-center gap-2 opacity-50 cursor-not-allowed col-span-2">
+<span class="material-symbols-outlined text-[24px] text-on-surface-variant">table</span>
+<span class="font-label-caps text-[11px]">Excel / Sheets</span>
+<span class="text-[9px] bg-surface-variant px-1 rounded">Soon</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Report Templates -->
+<div class="mt-8 pt-8 border-t border-outline-variant">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Report Templates</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Start a new analysis using specialized AI models designed for specific domains.</p>
+</div>
+<button class="text-secondary font-label-md text-label-md hover:underline flex items-center gap-1">
+                                Template Library <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Template 1 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-primary-fixed text-on-primary-fixed flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">summarize</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">Executive Summary</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">High-level overview of key metrics, risks, and strategic recommendations for C-suite.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+<!-- Template 2 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-[#dcfce7] text-[#166534] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">Sales Performance</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Deep dive into pipeline velocity, win rates, territory performance, and forecasting.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+<!-- Template 3 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-[#fae8ff] text-[#86198f] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">Marketing Overview</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Analyze campaign ROI, channel attribution, conversion metrics, and audience engagement.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+<!-- Template 4 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-[#ffedd5] text-[#9a3412] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">Financial Analysis</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">P&amp;L review, margin analysis, cash flow forecasting, and budget variance reporting.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+<!-- Template 5 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-[#e0f2fe] text-[#0369a1] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">precision_manufacturing</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">Operations Review</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Supply chain metrics, production efficiency, resource utilization, and bottleneck identification.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+<!-- Template 6 -->
+<div class="group border border-outline-variant bg-surface-container-lowest rounded-lg p-5 cursor-pointer hover:border-secondary hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05)] transition-all">
+<div class="w-10 h-10 rounded bg-[#fce7f3] text-[#be185d] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1 text-lg">HR Performance</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 line-clamp-2">Retention tracking, employee sentiment analysis, hiring funnel velocity, and compensation modeling.</p>
+<span class="text-secondary font-label-md text-label-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Use Template <span class="material-symbols-outlined text-[16px]">arrow_right_alt</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
