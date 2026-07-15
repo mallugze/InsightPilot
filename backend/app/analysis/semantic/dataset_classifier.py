@@ -1,105 +1,149 @@
 import pandas as pd
 from typing import Dict, Any, List, Tuple
 
-# Registry of domain classifiers. Extensible design.
-DOMAIN_REGISTRY = [
+# Comprehensive multi-level registry
+CLASSIFIER_REGISTRY = [
     {
         "domain": "Scientific",
         "subdomain": "Biology",
-        "keywords": ["sepal", "petal", "species", "iris", "organism", "gene", "protein", "dna", "rna", "cell", "scientific"],
-        "characteristics": "Biological measurements or taxonomy classifications with numerical attributes."
+        "use_case": "Iris Classification",
+        "intent": "Species Prediction",
+        "domain_kws": ["sepal", "petal", "iris", "species", "organism", "gene", "protein", "cell", "dna", "rna", "scientific"],
+        "subdomain_kws": ["sepal", "petal", "iris", "species", "plant", "botany", "biology"],
+        "use_case_kws": ["sepal", "petal", "iris", "setosa", "versicolor", "virginica"],
+        "intent_kws": ["species", "class", "prediction", "predict", "target"]
     },
     {
         "domain": "Machine Learning",
         "subdomain": "Classification Benchmark",
-        "keywords": ["survived", "passenger", "titanic", "class", "target", "label", "iris", "species", "feature", "prediction"],
-        "characteristics": "Benchmark datasets with clear independent variables and categorical labels."
+        "use_case": "Titanic Survival",
+        "intent": "Survival Prediction",
+        "domain_kws": ["survived", "passenger", "titanic", "pclass", "sibling", "parent", "embarked", "ml", "classification"],
+        "subdomain_kws": ["passenger", "titanic", "ticket", "cabin", "fare"],
+        "use_case_kws": ["survived", "titanic", "pclass", "cabin"],
+        "intent_kws": ["survived", "predict", "survival"]
     },
     {
         "domain": "Business",
         "subdomain": "Sales",
-        "keywords": ["revenue", "sales", "revenue_usd", "amount", "profit", "transaction", "order", "cost", "quantity", "price"],
-        "characteristics": "Transactional records tracing consumer transactions and profitability metrics."
+        "use_case": "Revenue Analytics",
+        "intent": "Revenue Optimization",
+        "domain_kws": ["revenue", "sales", "profit", "transaction", "order", "cost", "quantity", "price", "invoice", "deal"],
+        "subdomain_kws": ["revenue", "sales", "transaction", "order", "invoice"],
+        "use_case_kws": ["revenue", "profit", "cost", "margin", "forecast"],
+        "intent_kws": ["optimization", "growth", "performance", "forecast", "planning"]
     },
     {
         "domain": "Business",
         "subdomain": "Finance",
-        "keywords": ["income", "receipt", "debit", "credit", "expense", "budget", "ledger", "tax", "accounting"],
-        "characteristics": "Corporate ledgers tracking financial inflows, outflows, and fiscal accounts."
+        "use_case": "Ledger Accounting",
+        "intent": "Expense Auditing",
+        "domain_kws": ["ledger", "debit", "credit", "tax", "accounting", "asset", "expense", "budget", "finance"],
+        "subdomain_kws": ["ledger", "debit", "credit", "accounting"],
+        "use_case_kws": ["expense", "budget", "cost_center"],
+        "intent_kws": ["audit", "compliance", "cost_control"]
     },
     {
         "domain": "Business",
         "subdomain": "Human Resources",
-        "keywords": ["employee", "attrition", "staff", "salary", "wage", "department", "tenure", "hr", "workforce", "hiring"],
-        "characteristics": "Corporate staff logs monitoring headcount, attrition, and compensation distributions."
-    },
-    {
-        "domain": "Business",
-        "subdomain": "Inventory",
-        "keywords": ["stock", "quantity", "warehouse", "sku", "supplier", "reorder", "inventory", "product_id"],
-        "characteristics": "Logistics stock files monitoring product availability and shelf levels."
+        "use_case": "Employee Management",
+        "intent": "Attrition Prediction",
+        "domain_kws": ["employee", "staff", "salary", "wage", "attrition", "hiring", "tenure", "hr", "workforce"],
+        "subdomain_kws": ["employee", "staff", "tenure", "hr"],
+        "use_case_kws": ["salary", "wage", "compensation"],
+        "intent_kws": ["attrition", "retention", "turnover"]
     },
     {
         "domain": "Healthcare",
-        "subdomain": "Clinical Records",
-        "keywords": ["patient", "diagnosis", "doctor", "disease", "treatment", "admitted", "symptoms", "prescription", "clinic"],
-        "characteristics": "Patient records tracing clinical status, diagnostics, and treatments."
-    },
-    {
-        "domain": "Education",
-        "subdomain": "Student Performance",
-        "keywords": ["student", "grade", "score", "class", "course", "teacher", "enrollment", "gpa", "exam", "school"],
-        "characteristics": "Academic score registries tracking student progress and subject assessments."
+        "subdomain": "Clinical",
+        "use_case": "Patient Records",
+        "intent": "Risk Analysis",
+        "domain_kws": ["patient", "diagnosis", "disease", "symptoms", "doctor", "admitted", "prescription", "clinic", "medical"],
+        "subdomain_kws": ["patient", "clinical", "admitted", "discharge"],
+        "use_case_kws": ["diagnosis", "disease", "symptoms", "treatment"],
+        "intent_kws": ["risk", "prognosis", "outcome", "survival"]
     },
     {
         "domain": "Real Estate",
-        "subdomain": "Housing Prices",
-        "keywords": ["house", "price", "room", "bedroom", "bathroom", "sqft", "lot", "zipcode", "mortgage", "real_estate"],
-        "characteristics": "Property listings tracking housing attributes and market pricing valuations."
+        "subdomain": "Valuation",
+        "use_case": "Housing Prices",
+        "intent": "Price Regression",
+        "domain_kws": ["house", "price", "room", "bedroom", "bathroom", "sqft", "lot", "zipcode", "mortgage", "real_estate"],
+        "subdomain_kws": ["house", "price", "valuation"],
+        "use_case_kws": ["bedroom", "bathroom", "sqft", "lot"],
+        "intent_kws": ["price", "value", "valuation", "predict"]
     },
     {
         "domain": "IoT",
-        "subdomain": "Sensor Telemetry",
-        "keywords": ["sensor", "temperature", "humidity", "device_id", "value", "telemetry", "metric", "timestamp"],
-        "characteristics": "Time series logs capturing machine sensor readings and environment telemetry."
+        "subdomain": "Telemetry",
+        "use_case": "Sensor Logs",
+        "intent": "Anomaly Telemetry Monitoring",
+        "domain_kws": ["sensor", "device", "temperature", "humidity", "telemetry", "timestamp", "voltage", "iot"],
+        "subdomain_kws": ["sensor", "telemetry", "timestamp"],
+        "use_case_kws": ["temperature", "humidity", "voltage"],
+        "intent_kws": ["anomaly", "alert", "monitoring", "failure"]
     }
 ]
 
-def classify_dataset_domain(df: pd.DataFrame, col_metadata: Dict[str, Any]) -> Tuple[str, str, str, float]:
+def calculate_kws_confidence(col_names: List[str], keywords: List[str]) -> float:
     """
-    Analyzes columns, types, and keyword associations to classify the dataset.
-    Returns: (domain, subdomain, characteristics, confidence_score)
+    Returns a confidence rating [0.0, 1.0] based on matching keyword overlaps.
     """
-    col_names_lower = [str(c["name"]).lower() for c in col_metadata.get("columns", [])]
-    total_cols = len(col_names_lower)
-    
-    if total_cols == 0:
-        return "Generic", "Generic Spreadsheet", "Generic tabular data structure.", 0.50
-
-    best_domain = "Generic"
-    best_subdomain = "Generic Spreadsheet"
-    best_char = "Generic tabular data structure with no strongly matched semantic keywords."
-    max_confidence = 0.50
-
-    for registry_item in DOMAIN_REGISTRY:
-        matches = 0
-        keywords = registry_item["keywords"]
-        
-        # Count keyword overlap in column headers
-        for col_name in col_names_lower:
-            if any(kw in col_name for kw in keywords):
-                matches += 1
-                
-        # Confidence logic: ratio of matching columns + base weight
-        if matches > 0:
-            match_ratio = matches / total_cols
-            # Calculate a confidence score bounded by [0.6, 0.99]
-            confidence = min(0.99, 0.60 + (match_ratio * 0.40))
+    matches = 0
+    for name in col_names:
+        if any(kw in name for kw in keywords):
+            matches += 1
             
-            if confidence > max_confidence:
-                max_confidence = confidence
-                best_domain = registry_item["domain"]
-                best_subdomain = registry_item["subdomain"]
-                best_char = registry_item["characteristics"]
-                
-    return best_domain, best_subdomain, best_char, round(max_confidence, 2)
+    if matches == 0:
+        return 0.0
+    ratio = matches / len(col_names)
+    return round(min(0.99, 0.50 + (ratio * 0.49)), 2)
+
+def classify_hierarchical_domain(df: pd.DataFrame, col_metadata: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Classifies datasets hierarchically: Domain -> Subdomain -> Use Case -> Intent.
+    Returns dictionaries of keys and independent confidence levels.
+    """
+    columns = col_metadata.get("columns", [])
+    col_names_lower = [str(c["name"]).lower() for c in columns]
+    
+    best_match = {
+        "domain": "Generic",
+        "subdomain": "Generic Spreadsheet",
+        "use_case": "General Analysis",
+        "intent": "Spreadsheet Profiling",
+        "domain_confidence": 0.50,
+        "subdomain_confidence": 0.50,
+        "use_case_confidence": 0.50,
+        "intent_confidence": 0.50,
+        "overall_confidence": 0.50
+    }
+    
+    if not col_names_lower:
+        return best_match
+        
+    highest_overall = 0.50
+    
+    for item in CLASSIFIER_REGISTRY:
+        d_conf = calculate_kws_confidence(col_names_lower, item["domain_kws"])
+        s_conf = calculate_kws_confidence(col_names_lower, item["subdomain_kws"])
+        u_conf = calculate_kws_confidence(col_names_lower, item["use_case_kws"])
+        i_conf = calculate_kws_confidence(col_names_lower, item["intent_kws"])
+        
+        overall = round((d_conf * 0.4) + (s_conf * 0.3) + (u_conf * 0.2) + (i_conf * 0.1), 2)
+        
+        if overall > highest_overall:
+            highest_overall = overall
+            best_match = {
+                "domain": item["domain"],
+                "subdomain": item["subdomain"],
+                "use_case": item["use_case"],
+                "intent": item["intent"],
+                "domain_confidence": d_conf if d_conf > 0 else 0.50,
+                "subdomain_confidence": s_conf if s_conf > 0 else 0.50,
+                "use_case_confidence": u_conf if u_conf > 0 else 0.50,
+                "intent_confidence": i_conf if i_conf > 0 else 0.50,
+                "overall_confidence": overall
+            }
+            
+    return best_match

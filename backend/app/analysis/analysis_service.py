@@ -132,6 +132,14 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
     )
     
     try:
+        # Auto-rename associated Workspace
+        from app.models.workspace import Workspace
+        if dataset.workspace_id:
+            workspace = db.query(Workspace).filter(Workspace.id == dataset.workspace_id).first()
+            if workspace:
+                workspace.workspace_name = sem_profile.get("suggested_workspace_name", workspace.workspace_name)
+                db.add(workspace)
+                
         db.add(analysis_result)
         db.commit()
         db.refresh(analysis_result)

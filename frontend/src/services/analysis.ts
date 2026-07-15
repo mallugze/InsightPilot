@@ -63,9 +63,24 @@ export interface AnalysisResultResponse {
   semantic_profile?: {
     domain: string;
     subdomain: string;
+    use_case?: string;
+    intent?: string;
     characteristics: string;
     domain_confidence: number;
+    subdomain_confidence?: number;
+    use_case_confidence?: number;
+    intent_confidence?: number;
+    entity_confidence?: number;
+    target_confidence?: number;
+    chart_confidence?: number;
+    ml_readiness_confidence?: number;
+    overall_confidence: number;
     entity: string;
+    quality?: string;
+    suggested_models?: string[];
+    suggested_icon?: string;
+    color_theme?: string;
+    suggested_workspace_name?: string;
     features: Array<{
       name: string;
       semantic_type: string;
@@ -87,8 +102,8 @@ export interface AnalysisResultResponse {
     };
     ml_readiness: Record<string, { score: number; reasoning: string }>;
     understanding_reasoning: string;
-    visualization_intent: Array<{ intent: string; reasoning: string; suggested_columns: string[] }>;
-    kpi_suggestions: Array<{ metric_name: string; aggregation_strategy: string; target_column: string; reasoning: string }>;
+    visualization_intent: Array<{ intent: string; chart_type?: string; reasoning: string; suggested_columns: string[] }>;
+    kpi_suggestions: Array<{ metric_name: string; aggregation_strategy: string; target_column: string; reasoning: string; selected_why?: string }>;
     dashboard_suggestions: { layout: string; primary_widget: string; secondary_widgets: string[] };
     report_suggestions: string[];
     chat_context: Record<string, any>;

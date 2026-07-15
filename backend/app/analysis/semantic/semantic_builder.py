@@ -1,172 +1,176 @@
 import pandas as pd
 from typing import Dict, Any, List
 
-from app.analysis.semantic.dataset_classifier import classify_dataset_domain
+from app.analysis.semantic.dataset_classifier import classify_hierarchical_domain
 from app.analysis.semantic.entity_detector import detect_entity
 from app.analysis.semantic.feature_classifier import classify_features
 from app.analysis.semantic.relationship_detector import discover_relationships
 from app.analysis.semantic.ml_readiness import evaluate_ml_readiness
-from app.analysis.semantic.reasoning_engine import generate_understanding_explanation
+from app.analysis.semantic.kpi_discovery import discover_kpis
+from app.analysis.semantic.chart_selector import select_charts
+from app.analysis.semantic.workspace_namer import suggest_workspace_details
+from app.analysis.semantic.summary_builder import build_executive_summary
+from app.analysis.semantic.dashboard_builder import compose_dashboard
 
 def build_semantic_profile(df: pd.DataFrame, col_metadata: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Ties together all modular semantic analyzers to output a comprehensive Semantic Profile
-    describing domains, subdomains, features, relationships, visualizations, and ML readiness.
+    Assembles a complete Semantic Profile by orchestrating the hierarchical domain classifiers,
+    dynamic KPI discovery engines, chart selectors, workspace namers, and summary generators.
     """
-    # 1. Hierarchical Domain & Subdomain classification
-    domain, subdomain, characteristics, domain_conf = classify_dataset_domain(df, col_metadata)
+    # 1. Multi-Level Dataset Classification
+    domain_match = classify_hierarchical_domain(df, col_metadata)
+    domain = domain_match["domain"]
+    subdomain = domain_match["subdomain"]
+    use_case = domain_match["use_case"]
+    intent = domain_match["intent"]
     
     # 2. Row Entity Detector
     entity = detect_entity(df, col_metadata)
     
-    # 3. Column Feature Categorizer
+    # 3. Feature Classifications
     features = classify_features(df, col_metadata)
     
-    # 4. Structural Relationship Discovery
+    # 4. Relationships discovery
     relationships = discover_relationships(df, features)
     
-    # 5. ML Suitability & Explainable Reasoning
+    # 5. ML suitability
     ml_readiness = evaluate_ml_readiness(df, relationships, features)
     
-    # 6. Natural Reasoning summary explanation
-    explanation = generate_understanding_explanation(
-        domain, subdomain, entity, features, relationships, ml_readiness
-    )
-
-    # 7. Visualization Intent
-    viz_intents = []
-    dates = relationships.get("time_dimensions", [])
-    metrics = relationships.get("primary_metrics", [])
-    groups = relationships.get("grouping_dimensions", [])
+    # 6. KPI Discovery Engine (returns aggregation strategy, reasoning, and selection explanation)
+    kpis = discover_kpis(df, features, relationships, domain)
     
-    if dates and metrics:
-        viz_intents.append({
-            "intent": "Trend",
-            "reasoning": f"Plotting timeline trend curves for metrics grouped by calendar stamps in '{dates[0]}'.",
-            "suggested_columns": [dates[0]] + metrics[:1]
-        })
-    if groups and metrics:
-        viz_intents.append({
-            "intent": "Comparison",
-            "reasoning": f"Comparing and ranking metrics against categorical dimensions such as '{groups[0]}'.",
-            "suggested_columns": [groups[0]] + metrics[:1]
-        })
-        viz_intents.append({
-            "intent": "Composition",
-            "reasoning": f"Visualizing percentage share composition of '{groups[0]}' groups.",
-            "suggested_columns": [groups[0]] + metrics[:1]
-        })
-    if len(metrics) >= 2:
-        viz_intents.append({
-            "intent": "Relationship",
-            "reasoning": "Investigating linear correlations and relationships between continuous measures.",
-            "suggested_columns": metrics[:2]
-        })
-    if metrics:
-        viz_intents.append({
-            "intent": "Distribution",
-            "reasoning": f"Visualizing standard value spreads and outlier distribution ranges of '{metrics[0]}'.",
-            "suggested_columns": metrics[:1]
-        })
-
-    # 8. KPI suggestions with aggregation strategy and reasoning
-    kpi_suggs = []
-    for feat in features:
-        name = feat["name"]
-        sem_type = feat["semantic_type"]
+    # 7. Chart Selection Engine
+    chart_recommendations = select_charts(df, features, relationships)
+    
+    # 8. Workspace Naming Engine
+    workspace_suggestions = suggest_workspace_details(domain, subdomain, use_case, intent)
+    
+    # 9. Adaptive Executive Summary Generator
+    exec_summary = build_executive_summary(
+        domain,
+        subdomain,
+        entity,
+        len(df),
+        relationships.get("primary_metrics", []),
+        relationships.get("grouping_dimensions", []),
+        ml_readiness
+    )
+    
+    # 10. Dashboard Composition Builder
+    dashboard_sections = compose_dashboard(
+        domain,
+        subdomain,
+        relationships.get("primary_metrics", []),
+        relationships.get("grouping_dimensions", []),
+        relationships.get("time_dimensions", [])
+    )
+    
+    # 11. Multi-level Confidence Mapping
+    target_confidence = 0.50
+    targets = relationships.get("potential_targets", [])
+    if targets:
+        target_confidence = next((f["confidence"] for f in features if f["name"] == targets[0]), 0.90)
         
-        if sem_type == "Currency":
-            kpi_suggs.append({
-                "metric_name": f"Total {name.replace('_', ' ').title()}",
-                "aggregation_strategy": "SUM",
-                "target_column": name,
-                "reasoning": f"Summing values in '{name}' calculates the total cumulative currency yield."
-            })
-        elif sem_type == "Numeric" and "id" not in name.lower() and "no" not in name.lower():
-            # Check if name looks like cost/expense or score
-            if any(k in name.lower() for k in ["score", "grade", "gpa", "age", "rate", "percent", "margin"]):
-                kpi_suggs.append({
-                    "metric_name": f"Average {name.replace('_', ' ').title()}",
-                    "aggregation_strategy": "MEAN",
-                    "target_column": name,
-                    "reasoning": f"Calculating the mean of '{name}' gauges normal baseline rates."
-                })
-            else:
-                kpi_suggs.append({
-                    "metric_name": f"Cumulative {name.replace('_', ' ').title()}",
-                    "aggregation_strategy": "SUM",
-                    "target_column": name,
-                    "reasoning": f"Aggregating total '{name}' logs cumulative volume levels."
-                })
-        elif sem_type == "Primary Key":
-            kpi_suggs.append({
-                "metric_name": f"Total {entity} Count",
-                "aggregation_strategy": "COUNT",
-                "target_column": name,
-                "reasoning": f"Counting unique row keys in '{name}' logs the total headcount volume."
-            })
-
-    # Limit to top 5 suggested KPIs
-    kpi_suggs = kpi_suggs[:5]
-    if not kpi_suggs:
-        kpi_suggs.append({
-            "metric_name": "Total Records",
-            "aggregation_strategy": "COUNT",
-            "target_column": columns[0]["name"] if columns else "id",
-            "reasoning": "Fallback count of dataset row records."
-        })
-
-    # 9. Dashboard Layout Suggestions
-    layout = "Metric Groupings Grid"
-    if dates:
-        layout = "Chronological Timeline"
-    elif len(metrics) >= 3:
-        layout = "Multi-variable Metrics Spread"
+    chart_confidence = max([c["confidence"] for c in chart_recommendations]) if chart_recommendations else 0.50
+    ml_confidence = max([m["score"] / 100.0 for m in ml_readiness.values()]) if ml_readiness else 0.50
+    entity_confidence = 0.90 if entity != "Generic Record" else 0.50
+    
+    overall_confidence = round(
+        (domain_match["overall_confidence"] * 0.3) +
+        (entity_confidence * 0.2) +
+        (target_confidence * 0.2) +
+        (chart_confidence * 0.15) +
+        (ml_confidence * 0.15),
+        2
+    )
+    
+    # 12. Quality Metric Heuristics
+    missing_ratio = df.isnull().sum().sum() / (df.size if df.size > 0 else 1)
+    if missing_ratio < 0.01:
+        quality = "Excellent"
+    elif missing_ratio < 0.05:
+        quality = "Good"
+    elif missing_ratio < 0.15:
+        quality = "Fair"
+    else:
+        quality = "Poor"
         
-    dash_suggestions = {
-        "layout": layout,
-        "primary_widget": "Timeline Line Chart" if dates else "Categorical Bar Distribution",
-        "secondary_widgets": ["KPI Metrics Cards Grid", "Pearson Correlation Heatmap", "Anomaly Outliers Alerts List"]
-    }
-
-    # 10. Report layout sections
-    report_suggs = ["Executive Dataset Overview Profile", "Data Quality & Completeness Audit"]
-    if dates:
-        report_suggs.append("Historical Trend Timeline Analysis")
-    if groups:
-        report_suggs.append("Categorical Groupings & Segment Breakdown")
-    if len(metrics) >= 2:
-        report_suggs.append("Metric Correlations & Linear Relationships Matrix")
+    # 13. Suggested ML Algorithms reasoning list
+    suggested_models = []
+    if ml_readiness.get("classification", {}).get("score", 0) >= 70:
+        suggested_models.extend(["Random Forest Classifier", "XGBoost", "Logistic Regression"])
+    if ml_readiness.get("regression", {}).get("score", 0) >= 70:
+        suggested_models.extend(["Linear Regression", "Ridge Regression", "Gradient Boosting Regressor"])
+    if ml_readiness.get("forecasting", {}).get("score", 0) >= 70:
+        suggested_models.extend(["Prophet", "ARIMA", "Exponential Smoothing"])
+    if ml_readiness.get("clustering", {}).get("score", 0) >= 70:
+        suggested_models.extend(["K-Means", "DBSCAN"])
         
-    ml_feats = [m for m, p in ml_readiness.items() if p["score"] >= 70]
-    if ml_feats:
-        report_suggs.append(f"Predictive Suitability & ML {', '.join([m.title() for m in ml_feats])} Projections")
+    if not suggested_models:
+        suggested_models = ["Descriptive Aggregations", "Frequency Histograms"]
 
-    # 11. Chat Context metadata
-    chat_context = {
-        "dataset_domain": domain,
-        "dataset_subdomain": subdomain,
-        "row_entity": entity,
-        "total_rows": len(df),
-        "total_columns": len(features),
-        "primary_keys": relationships.get("potential_targets", []),
-        "timeline_keys": dates,
-        "key_metrics": metrics[:4]
-    }
+    # 14. Suggestions lists
+    report_suggestions = ["Executive Dataset Overview Profile", "Data Quality & Completeness Audit"]
+    if relationships.get("time_dimensions", []):
+        report_suggestions.append("Historical Trend Timeline Analysis")
+    if relationships.get("grouping_dimensions", []):
+        report_suggestions.append("Categorical Groupings & Segment Breakdown")
+    if ml_readiness.get("classification", {}).get("score", 0) >= 70 or ml_readiness.get("regression", {}).get("score", 0) >= 70:
+        report_suggestions.append("Predictive Suitability & ML Projections")
 
-    return {
+    # Combine into a unified Semantic Profile
+    profile = {
+        # Hierarchical domain classification
         "domain": domain,
         "subdomain": subdomain,
-        "characteristics": characteristics,
-        "domain_confidence": domain_conf,
+        "use_case": use_case,
+        "intent": intent,
+        "characteristics": domain_match["domain"] + " tabular data file supporting " + domain_match["use_case"],
+        
+        # Identity
         "entity": entity,
         "features": features,
         "relationships": relationships,
         "ml_readiness": ml_readiness,
-        "understanding_reasoning": explanation,
-        "visualization_intent": viz_intents,
-        "kpi_suggestions": kpi_suggs,
-        "dashboard_suggestions": dash_suggestions,
-        "report_suggestions": report_suggs,
-        "chat_context": chat_context
+        "understanding_reasoning": exec_summary,
+        "visualization_intent": chart_recommendations,
+        "kpi_suggestions": kpis,
+        
+        # Dynamic Dashboard layouts
+        "dashboard_sections": dashboard_sections,
+        
+        # Workspace Suggestion Info
+        "suggested_workspace_name": workspace_suggestions["suggested_workspace_name"],
+        "short_description": workspace_suggestions["short_description"],
+        "suggested_icon": workspace_suggestions["suggested_icon"],
+        "color_theme": workspace_suggestions["color_theme"],
+        
+        # ML Algorithms suggestions
+        "suggested_models": suggested_models,
+        
+        # Quality
+        "quality": quality,
+        
+        # Multi-level Confidence scores
+        "domain_confidence": domain_match["domain_confidence"],
+        "subdomain_confidence": domain_match["subdomain_confidence"],
+        "use_case_confidence": domain_match["use_case_confidence"],
+        "intent_confidence": domain_match["intent_confidence"],
+        "entity_confidence": entity_confidence,
+        "target_confidence": target_confidence,
+        "chart_confidence": chart_confidence,
+        "ml_readiness_confidence": ml_confidence,
+        "overall_confidence": overall_confidence,
+        
+        # Context mappings for reports
+        "report_suggestions": report_suggestions,
+        "chat_context": {
+            "dataset_domain": domain,
+            "dataset_subdomain": subdomain,
+            "row_entity": entity,
+            "total_rows": len(df),
+            "total_columns": len(features)
+        }
     }
+    
+    return profile

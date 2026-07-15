@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useWorkspace } from '../../../context/WorkspaceContext';
 import { Card } from '../../../components/ui/Card';
 import { runDatasetAnalysis } from '../../../services/analysis';
+import type { AnalysisResultResponse } from '../../../services/analysis';
 import { Check, Sparkles, AlertCircle } from 'lucide-react';
 
 interface ProgressStep {
@@ -12,24 +13,27 @@ interface ProgressStep {
 export default function AnalysisProgressPage() {
   const { uploadState, completeAnalysis } = useWorkspace();
   const [steps, setSteps] = useState<ProgressStep[]>([
-    { label: 'Reading dataset', state: 'active' },
-    { label: 'Detecting columns', state: 'pending' },
-    { label: 'Identifying dataset type', state: 'pending' },
-    { label: 'Finding trends', state: 'pending' },
-    { label: 'Detecting anomalies', state: 'pending' },
-    { label: 'Preparing executive summary', state: 'pending' },
-    { label: 'Building dashboard', state: 'pending' },
+    { label: 'Understanding Dataset...', state: 'active' },
+    { label: 'Detecting Domain...', state: 'pending' },
+    { label: 'Understanding Entity...', state: 'pending' },
+    { label: 'Selecting Dashboard...', state: 'pending' },
+    { label: 'Preparing Insights...', state: 'pending' },
+    { label: 'Selecting Charts...', state: 'pending' },
+    { label: 'Generating Recommendations...', state: 'pending' },
+    { label: 'Finalizing Workspace...', state: 'pending' },
   ]);
 
   const [progressPercent, setProgressPercent] = useState(0);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResultResponse | null>(null);
 
   useEffect(() => {
     const triggerBackendAnalysis = async () => {
       try {
         if (uploadState?.datasetId) {
           const datasetIdNum = parseInt(uploadState.datasetId, 10);
-          await runDatasetAnalysis(datasetIdNum);
+          const result = await runDatasetAnalysis(datasetIdNum);
+          setAnalysisResult(result);
         }
       } catch (err: any) {
         console.error("Backend analysis failed:", err);
@@ -47,18 +51,15 @@ export default function AnalysisProgressPage() {
         clearInterval(interval);
         
         // Retrieve actual database values populated during ingestion
-        const datasetType = uploadState?.datasetType || 'Standard Dataset';
+        const datasetType = analysisResult?.semantic_profile?.domain || uploadState?.datasetType || 'Standard Dataset';
         const rowsCount = uploadState?.rowsCount || 0;
         const colsCount = uploadState?.colsCount || 0;
         const businessPulse = Math.round(uploadState?.qualityScore || 95);
-        const topInsight = `Successfully loaded ${rowsCount} rows. The Profiling Engine detected ${
-          uploadState?.columnMetadata?.columns?.filter((c: any) => c.is_numeric).length || 0
-        } numeric variables and ${
-          uploadState?.columnMetadata?.columns?.filter((c: any) => c.is_categorical).length || 0
-        } categorical features, ready for decision intelligence.`;
-        const suggestedWorkspaceName = uploadState?.datasetType 
-          ? `${uploadState.datasetType} Workspace` 
-          : 'Business Analysis';
+        const topInsight = analysisResult?.semantic_profile?.understanding_reasoning || `Successfully loaded ${rowsCount} rows.`;
+        
+        const emoji = analysisResult?.semantic_profile?.suggested_icon || '💼';
+        const rawName = analysisResult?.semantic_profile?.suggested_workspace_name || 'Business Analysis';
+        const suggestedWorkspaceName = `${emoji} ${rawName}`;
 
         completeAnalysis(
           datasetType,

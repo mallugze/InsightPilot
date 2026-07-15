@@ -160,7 +160,11 @@ export default function DashboardPage() {
               </Badge>
             </div>
             <div className="prose prose-sm max-w-none text-on-surface font-body-lg text-body-lg leading-relaxed space-y-3 pr-2">
-              {insights.length > 0 ? (
+              {analysis.semantic_profile?.understanding_reasoning ? (
+                <p className="m-0 font-medium text-slate-800 leading-relaxed text-base">
+                  {analysis.semantic_profile.understanding_reasoning}
+                </p>
+              ) : insights.length > 0 ? (
                 insights.map((insight, idx) => (
                   <p key={idx} className="m-0 font-medium text-slate-800">
                     • {insight}
@@ -217,63 +221,160 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Dataset Intelligence Panel */}
+      {/* Dataset Intelligence Panel / Semantic Inspector */}
       <section className="space-y-4">
-        <Card className="bg-white rounded-lg card-border p-gutter flex flex-col gap-4 text-left border border-slate-200 shadow-sm">
+        <Card className="bg-white rounded-lg card-border p-gutter flex flex-col gap-6 text-left border border-slate-200 shadow-sm">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-3 justify-between">
             <div className="flex items-center gap-2">
               <Brain className="text-secondary" size={24} />
               <div>
                 <h3 className="font-display text-lg font-bold text-slate-800 m-0">Dataset Intelligence Panel</h3>
-                <p className="font-sans text-xs text-slate-500 m-0">Hierarchical semantic profiles, column meanings, and machine learning readiness details.</p>
+                <p className="font-sans text-xs text-slate-500 m-0">Inferred metadata, dynamic metric aggregates, and machine learning readiness profiles.</p>
               </div>
             </div>
             {analysis.semantic_profile && (
-              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold px-2.5 py-1 rounded text-xs">
-                Inferred: {analysis.semantic_profile.domain} Domain ({analysis.semantic_profile.subdomain})
+              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 font-semibold px-2.5 py-1 rounded text-xs flex items-center gap-1.5">
+                <span>{analysis.semantic_profile.suggested_icon}</span>
+                <span>Inferred overall: {(analysis.semantic_profile.overall_confidence * 100).toFixed(0)}% Match</span>
               </Badge>
             )}
           </div>
           
           {analysis.semantic_profile ? (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-              {/* Classification Description */}
-              <div className="lg:col-span-8 space-y-5">
-                <div className="bg-primary/5 rounded-lg p-4 border border-primary/10">
-                  <h4 className="font-display text-sm font-semibold text-primary mb-1.5 flex items-center gap-1.5">
-                    <Sparkles size={16} /> Analytical Reasoning Summary
-                  </h4>
-                  <p className="font-sans text-sm text-slate-700 leading-relaxed m-0 font-medium">
-                    {analysis.semantic_profile.understanding_reasoning}
-                  </p>
+            <div className="space-y-6">
+              {/* Row 1: Identity Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                {/* Hierarchy card */}
+                <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100 flex flex-col justify-between">
+                  <span className="font-display text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Semantic Hierarchy</span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Domain:</span>
+                      <span className="font-bold text-secondary">{analysis.semantic_profile.domain} ({(analysis.semantic_profile.domain_confidence * 100).toFixed(0)}%)</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Subdomain:</span>
+                      <span className="font-semibold text-slate-800">{analysis.semantic_profile.subdomain} ({((analysis.semantic_profile.subdomain_confidence || 0.50) * 100).toFixed(0)}%)</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Use Case:</span>
+                      <span className="font-semibold text-slate-800">{analysis.semantic_profile.use_case}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Intent:</span>
+                      <span className="font-semibold text-slate-800">{analysis.semantic_profile.intent}</span>
+                    </div>
+                  </div>
                 </div>
-                
-                {/* Features List */}
-                <div>
-                  <h4 className="font-display text-sm font-semibold text-slate-800 mb-2">Column Feature Classifications</h4>
-                  <div className="overflow-x-auto">
+
+                {/* Identity & Quality */}
+                <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100 flex flex-col justify-between">
+                  <span className="font-display text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Dataset Identity</span>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Row Entity:</span>
+                      <span className="font-bold text-slate-800">{analysis.semantic_profile.entity}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Dataset Samples:</span>
+                      <span className="font-bold text-slate-800">{analysis.semantic_profile.chat_context?.total_rows?.toLocaleString() || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Total columns:</span>
+                      <span className="font-bold text-slate-800">{analysis.semantic_profile.chat_context?.total_columns || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Data Quality:</span>
+                      <Badge className={`font-bold px-1.5 py-0.5 rounded text-[10px] ${
+                        analysis.semantic_profile.quality === 'Excellent' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                        analysis.semantic_profile.quality === 'Good' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                        'bg-amber-50 text-amber-700 border-amber-100'
+                      }`}>
+                        {analysis.semantic_profile.quality}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Suggested ML Algorithms */}
+                <div className="bg-slate-50/50 rounded-xl p-4 border border-slate-100 flex flex-col justify-between">
+                  <span className="font-display text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Recommended Algorithms</span>
+                  <div className="space-y-1.5">
+                    {analysis.semantic_profile.suggested_models?.map((model: string, idx: number) => (
+                      <span key={idx} className="inline-block bg-white text-slate-700 text-[10px] font-bold px-2 py-1 rounded border border-slate-200 shadow-sm mr-1.5 mb-1.5">
+                        {model}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2: Summary block */}
+              <div className="bg-primary/5 rounded-xl p-4 border border-primary/10">
+                <h4 className="font-display text-sm font-bold text-primary mb-1.5 flex items-center gap-1.5">
+                  <Sparkles size={16} /> Analytical Reasoning Summary
+                </h4>
+                <p className="font-sans text-sm text-slate-700 leading-relaxed m-0 font-medium">
+                  {analysis.semantic_profile.understanding_reasoning}
+                </p>
+              </div>
+
+              {/* Row 3: Split layouts (KPI Suggestions & Viz Intent) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+                {/* KPI suggestions table */}
+                <div className="lg:col-span-6 space-y-2">
+                  <h4 className="font-display text-sm font-bold text-slate-800 m-0">Inferred KPI Metrics</h4>
+                  <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
                     <table className="min-w-full text-xs divide-y divide-slate-100">
                       <thead>
-                        <tr className="text-slate-500 font-bold text-[11px] uppercase tracking-wider bg-slate-50/50">
-                          <th className="py-2.5 px-3 text-left">Column</th>
-                          <th className="py-2.5 px-3 text-left">Semantic Type</th>
-                          <th className="py-2.5 px-3 text-left">Native Type</th>
-                          <th className="py-2.5 px-3 text-left">Confidence</th>
-                          <th className="py-2.5 px-3 text-left">Possible Meaning</th>
+                        <tr className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <th className="py-2 px-3 text-left">Metric Name</th>
+                          <th className="py-2 px-3 text-left">Aggregation</th>
+                          <th className="py-2 px-3 text-left">Reasoning</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
-                        {analysis.semantic_profile.features.map((f, i) => (
-                          <tr key={i} className="hover:bg-slate-50/30 transition-colors">
-                            <td className="py-2.5 px-3 font-mono text-secondary font-bold text-xs">{f.name}</td>
+                      <tbody className="divide-y divide-slate-100 text-slate-600">
+                        {analysis.semantic_profile.kpi_suggestions?.map((k, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50/20">
+                            <td className="py-2.5 px-3 font-bold text-slate-800">{k.metric_name}</td>
                             <td className="py-2.5 px-3">
-                              <Badge className="bg-secondary/10 text-secondary text-[10px] px-2.5 py-0.5 rounded font-bold border border-secondary/15">
-                                {f.semantic_type}
+                              <Badge className="bg-slate-100 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded border">
+                                {k.aggregation_strategy}
                               </Badge>
                             </td>
-                            <td className="py-2.5 px-3 text-slate-500 font-mono text-xs">{f.native_type}</td>
-                            <td className="py-2.5 px-3 font-bold text-emerald-600">{(f.confidence * 100).toFixed(0)}%</td>
-                            <td className="py-2.5 px-3 text-slate-500 italic">{f.possible_meaning}</td>
+                            <td className="py-2.5 px-3 text-[11px] text-slate-500 font-medium italic">{k.reasoning}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Suggested charts */}
+                <div className="lg:col-span-6 space-y-2">
+                  <h4 className="font-display text-sm font-bold text-slate-800 m-0">Recommended Visualization Intents</h4>
+                  <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
+                    <table className="min-w-full text-xs divide-y divide-slate-100">
+                      <thead>
+                        <tr className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <th className="py-2 px-3 text-left">Visual Intent</th>
+                          <th className="py-2 px-3 text-left">Chart Format</th>
+                          <th className="py-2 px-3 text-left">Rationale</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-600">
+                        {analysis.semantic_profile.visualization_intent?.map((viz, idx) => (
+                          <tr key={idx} className="hover:bg-slate-50/20">
+                            <td className="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                              <span>{viz.intent}</span>
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <Badge className="bg-secondary/5 text-secondary text-[10px] font-bold px-2 py-0.5 rounded border border-secondary/15">
+                                {viz.chart_type}
+                              </Badge>
+                            </td>
+                            <td className="py-2.5 px-3 text-[11px] text-slate-500 font-medium italic">{viz.reasoning}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -282,57 +383,72 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Hierarchical metadata & ML Readiness Info (Col 4) */}
-              <div className="lg:col-span-4 space-y-4">
-                <div className="bg-slate-50/50 rounded-lg p-4 border border-slate-100 space-y-3">
-                  <h4 className="font-display text-sm font-semibold text-slate-800 border-b border-slate-200/60 pb-1.5 m-0">
-                    Semantic Hierarchy
-                  </h4>
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Top-Level Domain:</span>
-                      <span className="font-bold text-secondary text-right">{analysis.semantic_profile.domain}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Subdomain:</span>
-                      <span className="font-semibold text-slate-800 text-right">{analysis.semantic_profile.subdomain}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Confidence Rating:</span>
-                      <span className="font-bold text-emerald-600">{(analysis.semantic_profile.domain_confidence * 100).toFixed(0)}%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Row Entity Item:</span>
-                      <span className="font-mono bg-slate-200/50 px-2 py-0.5 rounded text-slate-700 font-bold">{analysis.semantic_profile.entity}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-50/50 rounded-lg p-4 border border-slate-100 space-y-3">
-                  <h4 className="font-display text-sm font-semibold text-slate-800 border-b border-slate-200/60 pb-1.5 m-0">
-                    Machine Learning Readiness
-                  </h4>
-                  <div className="space-y-3">
-                    {Object.entries(analysis.semantic_profile.ml_readiness).map(([task, details]: any) => (
-                      <div key={task} className="text-xs space-y-1 bg-white p-2.5 rounded-lg border border-slate-200/60 shadow-[0_1px_2px_0_rgba(0,0,0,0.02)]">
-                        <div className="flex justify-between items-center">
-                          <span className="font-bold text-slate-700 capitalize">{task}</span>
-                          <span className={`font-bold px-2 py-0.5 rounded text-[10px] uppercase border ${
-                            details.score >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
-                            details.score >= 40 ? 'bg-amber-50 text-amber-700 border-amber-100' :
-                            'bg-red-50 text-red-700 border-red-100'
-                          }`}>
-                            {details.score}%
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-slate-500 leading-tight m-0 font-medium pt-1">
-                          {details.reasoning}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+              {/* Row 4: Column Feature Classifications */}
+              <div className="space-y-2">
+                <h4 className="font-display text-sm font-bold text-slate-800 m-0">Column Metadata & Classifications</h4>
+                <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
+                  <table className="min-w-full text-xs divide-y divide-slate-100">
+                    <thead>
+                      <tr className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <th className="py-2 px-3 text-left">Column</th>
+                        <th className="py-2 px-3 text-left">Semantic Type</th>
+                        <th className="py-2 px-3 text-left">Native Type</th>
+                        <th className="py-2 px-3 text-left">Confidence</th>
+                        <th className="py-2 px-3 text-left">Possible Meaning</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-600">
+                      {analysis.semantic_profile.features.map((f, i) => (
+                        <tr key={i} className="hover:bg-slate-50/30 transition-colors">
+                          <td className="py-2.5 px-3 font-mono text-secondary font-bold">{f.name}</td>
+                          <td className="py-2.5 px-3">
+                            <Badge className="bg-secondary/10 text-secondary text-[10px] px-2.5 py-0.5 rounded font-bold border border-secondary/15">
+                              {f.semantic_type}
+                            </Badge>
+                          </td>
+                          <td className="py-2.5 px-3 text-slate-500 font-mono">{f.native_type}</td>
+                          <td className="py-2.5 px-3 font-bold text-emerald-600">{(f.confidence * 100).toFixed(0)}%</td>
+                          <td className="py-2.5 px-3 text-slate-500 italic font-medium">{f.possible_meaning}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
+
+              {/* Row 5: ML Suitability details */}
+              <div className="space-y-2">
+                <h4 className="font-display text-sm font-bold text-slate-800 m-0">Machine Learning Readiness Evaluation</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {Object.entries(analysis.semantic_profile.ml_readiness).map(([task, details]: any) => (
+                    <div key={task} className="bg-slate-50/50 p-3 rounded-xl border border-slate-100 space-y-1.5">
+                      <div className="flex justify-between items-center border-b border-slate-200/50 pb-1.5">
+                        <span className="font-bold text-slate-800 capitalize text-xs">{task}</span>
+                        <span className={`font-bold px-2 py-0.5 rounded text-[10px] uppercase border ${
+                          details.score >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                          details.score >= 40 ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                          'bg-red-50 text-red-700 border-red-100'
+                        }`}>
+                          {details.score}% Confidence
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-normal m-0 font-medium">
+                        {details.reasoning}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Collapsible raw JSON developer panel */}
+              <details className="bg-slate-50 border border-slate-100 rounded-xl p-4 shadow-inner">
+                <summary className="text-xs font-mono font-bold text-slate-700 cursor-pointer select-none">
+                  Collapsible Developer Mode (Raw JSON Profile)
+                </summary>
+                <pre className="text-[10px] text-slate-600 bg-white p-3 rounded border border-slate-100 mt-3 overflow-x-auto font-mono leading-relaxed">
+                  {JSON.stringify(analysis.semantic_profile, null, 2)}
+                </pre>
+              </details>
             </div>
           ) : (
             <p className="text-sm text-slate-500 italic m-0">No semantic metadata profiles exist in the active report.</p>

@@ -60,10 +60,25 @@ def test_semantic_profiles_generation():
     
     assert profile["domain"] == "Scientific"
     assert profile["subdomain"] == "Biology"
+    assert profile["use_case"] == "Iris Classification"
+    assert profile["intent"] == "Species Prediction"
     assert profile["entity"] == "Flower"
     assert profile["ml_readiness"]["classification"]["score"] > 50
     assert "flower" in profile["understanding_reasoning"].lower()
     assert any(viz["intent"] == "Comparison" for viz in profile["visualization_intent"])
+    
+    # Assert Workspace details
+    assert "suggested_workspace_name" in profile
+    assert profile["suggested_icon"] == "🌸"
+    assert profile["color_theme"] == "pink"
+    assert len(profile["dashboard_sections"]) > 0
+    assert "Random Forest Classifier" in profile["suggested_models"]
+    
+    # Assert multi-level confidences
+    assert "domain_confidence" in profile
+    assert "subdomain_confidence" in profile
+    assert "overall_confidence" in profile
+    assert "quality" in profile
     
     # --- DATASET 2: TITANIC PASSENGERS (ML Benchmark) ---
     titanic_csv = (
@@ -91,9 +106,12 @@ def test_semantic_profiles_generation():
     
     assert profile2["domain"] == "Machine Learning"
     assert profile2["subdomain"] == "Classification Benchmark"
+    assert profile2["use_case"] == "Titanic Survival"
     assert profile2["entity"] == "Passenger"
     assert profile2["ml_readiness"]["classification"]["score"] > 50
     assert "passenger" in profile2["understanding_reasoning"].lower()
+    assert profile2["suggested_icon"] == "🚢"
+    assert profile2["color_theme"] == "slate"
 
     # --- DATASET 3: REGULAR BUSINESS SALES ---
     sales_csv = (
@@ -118,10 +136,13 @@ def test_semantic_profiles_generation():
     
     assert profile3["domain"] == "Business"
     assert profile3["subdomain"] == "Sales"
+    assert profile3["use_case"] == "Revenue Analytics"
     assert profile3["entity"] == "Transaction"
     # Verify KPI aggregation suggestions
     kpi_suggs = profile3["kpi_suggestions"]
     assert any(k["aggregation_strategy"] == "SUM" and k["target_column"] == "revenue" for k in kpi_suggs)
+    # Check explanation parameters are populated
+    assert "selected_why" in kpi_suggs[0]
     
     print("All backend hierarchical semantic profiling tests PASSED successfully!")
 
