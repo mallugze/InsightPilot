@@ -10,18 +10,21 @@ def generate_insights(
     hero_zero: Dict[str, Any]
 ) -> List[str]:
     """
-    Generates deterministic, template-based business insights and observations from statistical analysis.
-    These are factual insights that feed into dashboards or future LLM generation steps.
+    Generates deterministic, template-based insights and observations from statistical analysis,
+    ensuring formatting (like dollar signs) only applies to currency-inferred columns.
     """
     insights = []
     
-    # 1. Dataset type and size observation
+    # 1. Dataset size description
+    # Dynamically extract record counts from various domain KPI keys
+    record_count = next((v for k, v in kpis.items() if any(x in k for x in ["records", "samples", "logged", "patients", "instances", "readings", "days"])), len(df) if 'df' in locals() else 'N/A')
+    
     insights.append(
-        f"Analyzed {dataset_type} dataset. Profile reflects {kpis.get('total_records', 'N/A')} records "
-        f"across {kpis.get('columns_count', 'N/A')} structural attributes with a health pulse of {pulse.get('score', 100.0)}/100."
+        f"Analyzed '{dataset_type}' dataset. The analytical profile contains {record_count} observations "
+        f"across continuous measures and categorical segment groups, yielding a data quality rating of {pulse.get('score', 100.0)}/100."
     )
     
-    # 2. Key KPI findings
+    # 2. Key KPI findings for business domains
     if dataset_type == "Sales":
         insights.append(
             f"Total gross sales revenue amounted to ${kpis.get('total_revenue', 0.0):,.2f} "
@@ -38,7 +41,7 @@ def generate_insights(
         )
         if kpis.get("attrition_rate", 0.0) > 0:
             insights.append(
-                f"Statistical attrition rate sits at {kpis.get('attrition_rate', 0.0)}%, "
+                f"Statistical attrition rate sits at {kpis.get("attrition_rate", 0.0)}%, "
                 f"which marks the percentage of left/terminated staff contracts."
             )
     elif dataset_type == "Finance":
@@ -47,15 +50,24 @@ def generate_insights(
             f"against total operating outflows of ${kpis.get('total_expense', 0.0):,.2f}."
         )
         insights.append(
-            f"Net operating surplus (profit) is ${kpis.get('net_profit', 0.0):,.2f}, representing a {kpis.get('profit_margin', 0.0)}% operational yield."
+            f"Net operating surplus is ${kpis.get('net_profit', 0.0):,.2f}, representing a {kpis.get('profit_margin', 0.0)}% operational yield."
         )
         
     # 3. Performance bounds (Hero/Zero)
     if hero_zero.get("metric_name") != "None":
+        metric_name = hero_zero.get("metric_name", "")
+        # Apply currency formatting only if metric has currency-related name
+        is_money = any(m in metric_name.lower() for m in ["revenue", "profit", "cost", "price", "wage", "salary", "expense", "fare"])
+        
+        hero_val = hero_zero.get("hero_value", 0.0)
+        zero_val = hero_zero.get("zero_value", 0.0)
+        
+        hero_formatted = f"${hero_val:,.2f}" if is_money else f"{hero_val:,.2f}"
+        zero_formatted = f"${zero_val:,.2f}" if is_money else f"{zero_val:,.2f}"
+        
         insights.append(
-            f"Performance grouping: '{hero_zero.get('hero_name')}' generated the highest "
-            f"{hero_zero.get('metric_name')} (${hero_zero.get('hero_value', 0.0):,.2f}), "
-            f"whereas '{hero_zero.get('zero_name')}' represented the lowest (${hero_zero.get('zero_value', 0.0):,.2f})."
+            f"Outliers breakdown: '{hero_zero.get('hero_name')}' registered the highest "
+            f"{metric_name} ({hero_formatted}), whereas '{hero_zero.get('zero_name')}' represented the lowest ({zero_formatted})."
         )
         
     # 4. Trend trajectory
@@ -63,8 +75,8 @@ def generate_insights(
         dir_val = trends.get("trend_direction", "Stable")
         growth = trends.get("growth_percent", 0.0)
         insights.append(
-            f"Time-series trend: '{trends.get('metric_name')}' displays an '{dir_val}' direction "
-            f"with an overall growth deviation of {growth:+.1f}% across the span."
+            f"Chronological trend: '{trends.get('metric_name')}' displays a '{dir_val}' trajectory "
+            f"with an overall growth deviation of {growth:+.1f}% across the timeline."
         )
         
     # 5. Correlation observations
@@ -72,7 +84,7 @@ def generate_insights(
     if corrs:
         top_corr = corrs[0]
         insights.append(
-            f"Significant relationship: '{top_corr['column_a']}' has a '{top_corr['strength']}' "
+            f"Statistical correlation: Column '{top_corr['column_a']}' has a '{top_corr['strength']}' "
             f"link ({top_corr['coefficient']:+.2f}) with '{top_corr['column_b']}'."
         )
         
@@ -80,8 +92,8 @@ def generate_insights(
     anom_cnt = anomalies.get("anomalies_count", 0)
     if anom_cnt > 0:
         insights.append(
-            f"Outlier alerts: The engine flagged {anom_cnt} statistical anomalies (Z-score > 2.0) "
-            f"consisting of {anomalies.get('high_anomalies', 0)} spikes and {anomalies.get('low_anomalies', 0)} drops."
+            f"Outlier diagnostics: Identified {anom_cnt} values deviating outside typical ranges (Z-score > 2.0) "
+            f"consisting of {anomalies.get('high_anomalies', 0)} positive spikes and {anomalies.get('low_anomalies', 0)} drops."
         )
         
     return insights

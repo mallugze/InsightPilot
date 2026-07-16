@@ -4,19 +4,19 @@ from typing import Dict, Any, List, Tuple
 # Comprehensive multi-level registry
 CLASSIFIER_REGISTRY = [
     {
-        "domain": "Scientific",
-        "subdomain": "Biology",
-        "use_case": "Iris Classification",
-        "intent": "Species Prediction",
-        "domain_kws": ["sepal", "petal", "iris", "species", "organism", "gene", "protein", "cell", "dna", "rna", "scientific"],
-        "subdomain_kws": ["sepal", "petal", "iris", "species", "plant", "botany", "biology"],
+        "domain": "Biology",
+        "subdomain": "Botanical Classification",
+        "use_case": "Iris Species Classification",
+        "intent": "Flower Identification",
+        "domain_kws": ["sepal", "petal", "iris", "species", "organism", "gene", "protein", "cell", "dna", "rna", "scientific", "flower"],
+        "subdomain_kws": ["sepal", "petal", "iris", "species", "plant", "botany", "biology", "classification"],
         "use_case_kws": ["sepal", "petal", "iris", "setosa", "versicolor", "virginica"],
-        "intent_kws": ["species", "class", "prediction", "predict", "target"]
+        "intent_kws": ["species", "class", "prediction", "predict", "target", "identification"]
     },
     {
         "domain": "Machine Learning",
-        "subdomain": "Classification Benchmark",
-        "use_case": "Titanic Survival",
+        "subdomain": "Survival Analysis",
+        "use_case": "Titanic Passenger Outcomes",
         "intent": "Survival Prediction",
         "domain_kws": ["survived", "passenger", "titanic", "pclass", "sibling", "parent", "embarked", "ml", "classification"],
         "subdomain_kws": ["passenger", "titanic", "ticket", "cabin", "fare"],
@@ -25,38 +25,38 @@ CLASSIFIER_REGISTRY = [
     },
     {
         "domain": "Business",
-        "subdomain": "Sales",
+        "subdomain": "Retail Analytics",
         "use_case": "Revenue Analytics",
         "intent": "Revenue Optimization",
         "domain_kws": ["revenue", "sales", "profit", "transaction", "order", "cost", "quantity", "price", "invoice", "deal"],
-        "subdomain_kws": ["revenue", "sales", "transaction", "order", "invoice"],
+        "subdomain_kws": ["revenue", "sales", "transaction", "order", "invoice", "retail"],
         "use_case_kws": ["revenue", "profit", "cost", "margin", "forecast"],
         "intent_kws": ["optimization", "growth", "performance", "forecast", "planning"]
     },
     {
-        "domain": "Business",
-        "subdomain": "Finance",
+        "domain": "Financial",
+        "subdomain": "Financial Intelligence",
         "use_case": "Ledger Accounting",
         "intent": "Expense Auditing",
-        "domain_kws": ["ledger", "debit", "credit", "tax", "accounting", "asset", "expense", "budget", "finance"],
-        "subdomain_kws": ["ledger", "debit", "credit", "accounting"],
+        "domain_kws": ["ledger", "debit", "credit", "tax", "accounting", "asset", "expense", "budget", "finance", "financial"],
+        "subdomain_kws": ["ledger", "debit", "credit", "accounting", "finance"],
         "use_case_kws": ["expense", "budget", "cost_center"],
-        "intent_kws": ["audit", "compliance", "cost_control"]
+        "intent_kws": ["audit", "compliance", "cost_control", "risk"]
     },
     {
-        "domain": "Business",
+        "domain": "HR",
         "subdomain": "Human Resources",
         "use_case": "Employee Management",
         "intent": "Attrition Prediction",
         "domain_kws": ["employee", "staff", "salary", "wage", "attrition", "hiring", "tenure", "hr", "workforce"],
-        "subdomain_kws": ["employee", "staff", "tenure", "hr"],
+        "subdomain_kws": ["employee", "staff", "tenure", "hr", "resources"],
         "use_case_kws": ["salary", "wage", "compensation"],
         "intent_kws": ["attrition", "retention", "turnover"]
     },
     {
         "domain": "Healthcare",
-        "subdomain": "Clinical",
-        "use_case": "Patient Records",
+        "subdomain": "Patient Analytics",
+        "use_case": "Clinical Patient Records",
         "intent": "Risk Analysis",
         "domain_kws": ["patient", "diagnosis", "disease", "symptoms", "doctor", "admitted", "prescription", "clinic", "medical"],
         "subdomain_kws": ["patient", "clinical", "admitted", "discharge"],
@@ -65,23 +65,63 @@ CLASSIFIER_REGISTRY = [
     },
     {
         "domain": "Real Estate",
-        "subdomain": "Valuation",
-        "use_case": "Housing Prices",
+        "subdomain": "Price Prediction",
+        "use_case": "Housing Prices Valuation",
         "intent": "Price Regression",
         "domain_kws": ["house", "price", "room", "bedroom", "bathroom", "sqft", "lot", "zipcode", "mortgage", "real_estate"],
-        "subdomain_kws": ["house", "price", "valuation"],
+        "subdomain_kws": ["house", "price", "valuation", "housing"],
         "use_case_kws": ["bedroom", "bathroom", "sqft", "lot"],
         "intent_kws": ["price", "value", "valuation", "predict"]
     },
     {
-        "domain": "IoT",
-        "subdomain": "Telemetry",
-        "use_case": "Sensor Logs",
+        "domain": "Sensor",
+        "subdomain": "IoT Monitoring",
+        "use_case": "Sensor Telemetry Logs",
         "intent": "Anomaly Telemetry Monitoring",
         "domain_kws": ["sensor", "device", "temperature", "humidity", "telemetry", "timestamp", "voltage", "iot"],
-        "subdomain_kws": ["sensor", "telemetry", "timestamp"],
-        "use_case_kws": ["temperature", "humidity", "voltage"],
+        "subdomain_kws": ["sensor", "telemetry", "timestamp", "device", "reading"],
+        "use_case_kws": ["temperature", "humidity", "voltage", "peak"],
         "intent_kws": ["anomaly", "alert", "monitoring", "failure"]
+    },
+    {
+        "domain": "Weather",
+        "subdomain": "Climate Analytics",
+        "use_case": "Climate Trend Tracking",
+        "intent": "Climate Trend Forecasting",
+        "domain_kws": ["weather", "rain", "temperature", "humidity", "climate", "precipitation", "wind", "forecast"],
+        "subdomain_kws": ["weather", "climate", "meteorological"],
+        "use_case_kws": ["rain", "precipitation", "wind", "temp"],
+        "intent_kws": ["forecast", "trends", "analysis"]
+    },
+    {
+        "domain": "Student",
+        "subdomain": "Educational Analytics",
+        "use_case": "Student Performance Profiles",
+        "intent": "Grade Projections",
+        "domain_kws": ["student", "gpa", "score", "grade", "class", "enrollment", "course", "education"],
+        "subdomain_kws": ["student", "grade", "academic"],
+        "use_case_kws": ["gpa", "score", "grade", "test"],
+        "intent_kws": ["projection", "performance", "prediction"]
+    },
+    {
+        "domain": "Chemical",
+        "subdomain": "Chemical Analysis",
+        "use_case": "Wine Quality Analysis",
+        "intent": "Quality Classification",
+        "domain_kws": ["wine", "acidity", "alcohol", "quality", "sulfate", "density"],
+        "subdomain_kws": ["wine", "quality", "chemical"],
+        "use_case_kws": ["alcohol", "sulfate", "acidity"],
+        "intent_kws": ["quality", "rating", "classification"]
+    },
+    {
+        "domain": "Customer",
+        "subdomain": "Retention Model",
+        "use_case": "Customer Churn Analysis",
+        "intent": "Churn Prediction",
+        "domain_kws": ["churn", "customer", "retention", "tenure", "activity"],
+        "subdomain_kws": ["customer", "churn", "retention"],
+        "use_case_kws": ["tenure", "activity", "contract"],
+        "intent_kws": ["churn", "retention", "prediction"]
     }
 ]
 

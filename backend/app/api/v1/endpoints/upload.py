@@ -43,3 +43,30 @@ def get_workspace_datasets(
     """
     datasets = db.query(Dataset).filter(Dataset.workspace_id == workspace_id).all()
     return datasets
+
+from fastapi.responses import FileResponse
+import os
+from app.services.storage_service import TEMP_UPLOAD_DIR
+
+@router.get("/datasets/{dataset_id}/download")
+def download_raw_dataset(dataset_id: int, db: Session = Depends(get_db)):
+    """
+    Downloads the raw ingested dataset file from the temporary storage directory.
+    """
+    dataset = db.query(Dataset).filter(Dataset.id == dataset_id).first()
+    if not dataset:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found."
+        )
+    filepath = os.path.join(TEMP_UPLOAD_DIR, dataset.filename)
+    if not os.path.exists(filepath):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Raw dataset file has expired or been cleaned up from temporary storage."
+        )
+    return FileResponse(
+        path=filepath,
+        filename=dataset.original_filename,
+        media_type="text/csv"
+    )

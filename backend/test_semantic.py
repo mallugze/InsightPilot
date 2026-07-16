@@ -58,10 +58,10 @@ def test_semantic_profiles_generation():
     print("IRIS RELATIONSHIPS:", profile["relationships"])
     print("IRIS ML READINESS:", profile["ml_readiness"])
     
-    assert profile["domain"] == "Scientific"
-    assert profile["subdomain"] == "Biology"
-    assert profile["use_case"] == "Iris Classification"
-    assert profile["intent"] == "Species Prediction"
+    assert profile["domain"] == "Biology"
+    assert profile["subdomain"] == "Botanical Classification"
+    assert profile["use_case"] == "Iris Species Classification"
+    assert profile["intent"] == "Flower Identification"
     assert profile["entity"] == "Flower"
     assert profile["ml_readiness"]["classification"]["score"] > 50
     assert "flower" in profile["understanding_reasoning"].lower()
@@ -105,8 +105,8 @@ def test_semantic_profiles_generation():
     print("TITANIC ML READINESS:", profile2["ml_readiness"])
     
     assert profile2["domain"] == "Machine Learning"
-    assert profile2["subdomain"] == "Classification Benchmark"
-    assert profile2["use_case"] == "Titanic Survival"
+    assert profile2["subdomain"] == "Survival Analysis"
+    assert profile2["use_case"] == "Titanic Passenger Outcomes"
     assert profile2["entity"] == "Passenger"
     assert profile2["ml_readiness"]["classification"]["score"] > 50
     assert "passenger" in profile2["understanding_reasoning"].lower()
@@ -135,7 +135,7 @@ def test_semantic_profiles_generation():
     print("SALES KPI SUGGESTIONS:", kpi_suggs)
     
     assert profile3["domain"] == "Business"
-    assert profile3["subdomain"] == "Sales"
+    assert profile3["subdomain"] == "Retail Analytics"
     assert profile3["use_case"] == "Revenue Analytics"
     assert profile3["entity"] == "Transaction"
     # Verify KPI aggregation suggestions

@@ -1,11 +1,10 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
   ChevronDown, 
   Heart, 
-  BarChart2, 
-  Database, 
-  Table, 
   MoreVertical, 
   ChevronLeft, 
   ChevronRight, 
@@ -13,17 +12,101 @@ import {
   Clock, 
   FileText, 
   FileSpreadsheet, 
-  Download 
+  Download,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
+import { useWorkspace } from '../../../context/WorkspaceContext';
+import { apiFetch } from '../../../services/api';
 
 export default function AnalysisHistoryPage() {
-  const handleAction = (e: React.MouseEvent) => {
-    e.preventDefault();
-    alert('Action triggered');
+  const [historyItems, setHistoryItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const { startUpload, completeAnalysis, confirmWorkspace } = useWorkspace();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const data = await apiFetch<any[]>('/v1/analyze/history');
+        setHistoryItems(data);
+      } catch (err: any) {
+        console.error("Failed to load analysis history:", err);
+        setError(err.message || "Failed to load database analysis history. Verify backend server.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
+  const handleReopen = (item: any) => {
+    // 1. Stage upload context
+    startUpload({
+      fileName: item.dataset_name,
+      fileSize: "N/A",
+      datasetId: String(item.dataset_id),
+      datasetType: item.domain,
+      rowsCount: item.rows,
+      colsCount: item.columns,
+    });
+    
+    // 2. Complete onboarding analysis configurations
+    completeAnalysis(
+      item.domain,
+      item.rows,
+      item.columns,
+      item.business_pulse || 95,
+      `Reopened existing database analysis for dataset '${item.dataset_name}'.`,
+      item.workspace_name
+    );
+    
+    // 3. Confirm active workspace
+    confirmWorkspace(item.workspace_name);
+    
+    // 4. Redirect to dashboard view
+    navigate('/dashboard');
   };
+
+  const getDomainIcon = (domain: string) => {
+    const domLower = (domain || '').toLowerCase();
+    if (domLower.includes('scientific') || domLower.includes('biology')) return '🌸';
+    if (domLower.includes('machine learning') || domLower.includes('classification')) return '🤖';
+    if (domLower.includes('sales') || domLower.includes('business')) return '📈';
+    if (domLower.includes('healthcare') || domLower.includes('clinical')) return '🏥';
+    if (domLower.includes('real estate') || domLower.includes('valuation')) return '🏠';
+    if (domLower.includes('iot') || domLower.includes('telemetry')) return '🌦';
+    if (domLower.includes('finance')) return '💼';
+    if (domLower.includes('hr') || domLower.includes('human')) return '👥';
+    return '📊';
+  };
+
+  const filteredItems = historyItems.filter(item => {
+    const query = searchQuery.toLowerCase();
+    return (
+      item.dataset_name.toLowerCase().includes(query) ||
+      item.workspace_name.toLowerCase().includes(query) ||
+      item.domain.toLowerCase().includes(query)
+    );
+  });
+
+  const pinnedItems = historyItems.filter(item => (item.business_pulse || 0) >= 80).slice(0, 3);
+  const recentItems = historyItems.slice(0, 3);
+
+  if (loading) {
+    return (
+      <main className="pt-12 px-margin-page pb-section-gap max-w-container-max mx-auto flex flex-col justify-center items-center min-h-[60vh] gap-4">
+        <RefreshCw className="animate-spin text-secondary" size={32} style={{ animationDuration: '2s' }} />
+        <p className="font-sans text-sm text-on-surface-variant font-medium">Retrieving active profiles from PostgreSQL...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="pt-8 px-margin-page pb-section-gap max-w-container-max mx-auto flex flex-col xl:flex-row gap-section-gap">
@@ -33,19 +116,19 @@ export default function AnalysisHistoryPage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="text-left">
-            <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2 m-0">
+            <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2 m-0 font-bold">
               Analysis History
             </h1>
             <p className="font-body-md text-body-md text-on-surface-variant m-0">
-              Browse, revisit, and continue working with previous analyses.
+              Browse, revisit, and continue working with database records.
             </p>
           </div>
           <Button 
-            onClick={handleAction}
-            className="hidden sm:flex bg-primary text-on-primary py-2 px-5 rounded-lg font-label-md text-label-md font-medium hover:bg-inverse-surface transition-colors shadow-sm items-center justify-center gap-2 whitespace-nowrap"
+            onClick={() => navigate('/')}
+            className="flex bg-primary text-on-primary py-2.5 px-5 rounded-lg font-label-md text-label-md font-medium hover:bg-inverse-surface transition-colors shadow-sm items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
           >
             <Plus size={18} />
-            New Analysis
+            New Ingestion
           </Button>
         </div>
 
@@ -56,33 +139,15 @@ export default function AnalysisHistoryPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" size={20} />
             <input 
               className="w-full bg-surface-bright border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all" 
-              placeholder="Search datasets, workspaces, or tags..." 
+              placeholder="Search datasets, workspaces, or domains..." 
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-3">
-            <button className="flex items-center gap-2 px-3 py-2 border border-outline-variant rounded-lg text-body-sm font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-bright cursor-pointer font-medium">
-              Dataset Type
-              <ChevronDown size={16} />
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 border border-outline-variant rounded-lg text-body-sm font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-bright cursor-pointer font-medium">
-              Date Range
-              <ChevronDown size={16} />
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 border border-outline-variant rounded-lg text-body-sm font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-bright cursor-pointer font-medium">
-              Status
-              <ChevronDown size={16} />
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 border border-outline-variant rounded-full text-body-sm font-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors bg-surface-bright cursor-pointer font-medium">
-              <Heart size={18} />
-              Favorites
-            </button>
           </div>
         </div>
 
-        {/* Analysis Table */}
+        {/* Table Card */}
         <Card className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex-1 flex flex-col text-left">
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
@@ -91,154 +156,87 @@ export default function AnalysisHistoryPage() {
                   <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Dataset Name</th>
                   <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Upload Date</th>
                   <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Workspace</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Business Pulse</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">AI Confidence</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Insights</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Domain</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Samples</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Pulse</th>
+                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Match</th>
                   <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap">Status</th>
-                  <th className="px-6 py-4 font-label-caps text-label-caps text-on-surface-variant font-semibold whitespace-nowrap text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant/50">
-                {/* Row 1 */}
-                <tr className="hover:bg-surface-container-low/30 transition-colors group cursor-pointer">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#F0F7FF] border border-[#3B82F6]/20 flex items-center justify-center text-[#3B82F6] shrink-0">
-                        <BarChart2 size={18} />
-                      </div>
-                      <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors font-medium">Q3 Revenue Churn Model</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Oct 24, 2023</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Finance Strategy</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-error"></div>
-                      <span className="font-body-sm text-body-sm text-on-surface">Risk (42)</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface">94%</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">12</td>
-                  <td className="px-6 py-4">
-                    <Badge className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/50">
-                      Completed
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container cursor-pointer">
-                      <MoreVertical size={20} />
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 2 */}
-                <tr className="hover:bg-surface-container-low/30 transition-colors group cursor-pointer">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#F0F7FF] border border-[#3B82F6]/20 flex items-center justify-center text-[#3B82F6] shrink-0">
-                        <Database size={18} />
-                      </div>
-                      <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors font-medium">Customer Sentiment Q3</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Oct 22, 2023</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Marketing</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
-                      <span className="font-body-sm text-body-sm text-on-surface">Growth (88)</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface">89%</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">8</td>
-                  <td className="px-6 py-4">
-                    <Badge className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium bg-surface-container-high text-on-surface-variant border border-outline-variant/50">
-                      Completed
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container cursor-pointer">
-                      <MoreVertical size={20} />
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 3 */}
-                <tr className="hover:bg-surface-container-low/30 transition-colors group cursor-pointer">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-surface-container border border-outline-variant/50 flex items-center justify-center text-on-surface-variant shrink-0">
-                        <Database size={18} />
-                      </div>
-                      <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors font-medium">Supply Chain Latency - APAC</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Oct 20, 2023</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Operations</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-[#F59E0B]"></div>
-                      <span className="font-body-sm text-body-sm text-on-surface">Caution (65)</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant/50">--</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant/50">--</td>
-                  <td className="px-6 py-4">
-                    <Badge className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-medium bg-secondary/10 text-secondary border border-secondary/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
-                      Processing
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container cursor-pointer">
-                      <MoreVertical size={20} />
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 4 */}
-                <tr className="hover:bg-surface-container-low/30 transition-colors group cursor-pointer opacity-75">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-surface-container border border-outline-variant/50 flex items-center justify-center text-on-surface-variant shrink-0">
-                        <Table size={18} />
-                      </div>
-                      <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors font-medium">Legacy CRM Export 2022</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Oct 18, 2023</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">Archive</td>
-                  <td className="px-6 py-4">
-                    <span className="font-body-sm text-body-sm text-on-surface-variant">N/A</span>
-                  </td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant/50">--</td>
-                  <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant/50">--</td>
-                  <td className="px-6 py-4">
-                    <Badge className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium bg-error/10 text-error border border-error/20">
-                      Failed
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors p-1 rounded hover:bg-surface-container cursor-pointer">
-                      <MoreVertical size={20} />
-                    </button>
-                  </td>
-                </tr>
+                {filteredItems.length > 0 ? (
+                  filteredItems.map((item) => (
+                    <tr 
+                      key={item.dataset_id} 
+                      onClick={() => handleReopen(item)}
+                      className="hover:bg-slate-50/50 transition-colors group cursor-pointer"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-lg shrink-0">
+                            {getDomainIcon(item.domain)}
+                          </div>
+                          <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors font-semibold">
+                            {item.dataset_name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">
+                        {item.upload_date ? new Date(item.upload_date).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        }) : 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant font-medium">
+                        {item.workspace_name}
+                      </td>
+                      <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant">
+                        <Badge className="bg-secondary/5 text-secondary border border-secondary/15 px-2 py-0.5 rounded text-[11px] font-semibold">
+                          {item.domain}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 font-body-sm text-body-sm text-on-surface-variant font-bold">
+                        {item.rows.toLocaleString()} x {item.columns}
+                      </td>
+                      <td className="px-6 py-4">
+                        {item.business_pulse !== null ? (
+                          <div className="flex items-center gap-2">
+                            <div className={`w-2 h-2 rounded-full ${
+                              item.business_pulse >= 80 ? 'bg-emerald-500' :
+                              item.business_pulse >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                            }`}></div>
+                            <span className="font-body-sm text-body-sm text-on-surface font-semibold">
+                              {item.business_pulse}/100
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic">Unprocessed</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-body-sm text-body-sm text-slate-800 font-bold">
+                        {(item.overall_confidence * 100).toFixed(0)}%
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          item.status === 'READY' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' :
+                          item.status === 'FAILED' ? 'bg-red-50 text-red-700 border border-red-100' :
+                          'bg-amber-50 text-amber-700 border border-amber-100 animate-pulse'
+                        }`}>
+                          {item.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-12 text-center text-slate-400 italic">
+                      No analysis histories found. Ingest your first dataset!
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/50 bg-surface-bright">
-            <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Showing 1 to 4 of 24 entries</span>
-            <div className="flex items-center gap-2">
-              <button className="p-1 rounded border border-outline-variant text-on-surface-variant disabled:opacity-50 cursor-not-allowed" disabled>
-                <ChevronLeft size={18} />
-              </button>
-              <button className="p-1 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer">
-                <ChevronRight size={18} />
-              </button>
-            </div>
           </div>
         </Card>
       </div>
@@ -249,72 +247,60 @@ export default function AnalysisHistoryPage() {
         <Card className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Pin className="text-secondary" size={20} />
-            <h3 className="font-label-md text-label-md font-semibold text-on-surface uppercase tracking-wide m-0">Pinned Analyses</h3>
+            <h3 className="font-label-md text-label-md font-semibold text-on-surface uppercase tracking-wide m-0">Top Active Analyses</h3>
           </div>
-          <ul className="space-y-3 p-0 m-0 list-none">
-            <li>
-              <a className="flex flex-col gap-1 p-3 rounded-lg border border-outline-variant/50 hover:border-secondary/50 hover:bg-[#F0F7FF] transition-all group" href="#">
-                <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary font-medium">Global Sales Forecast FY24</span>
-                <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Last updated 2 days ago</span>
-              </a>
-            </li>
-            <li>
-              <a className="flex flex-col gap-1 p-3 rounded-lg border border-outline-variant/50 hover:border-secondary/50 hover:bg-[#F0F7FF] transition-all group" href="#">
-                <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary font-medium">Competitor Pricing Matrix</span>
-                <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Last updated 1 week ago</span>
-              </a>
-            </li>
-          </ul>
+          {pinnedItems.length > 0 ? (
+            <ul className="space-y-3 p-0 m-0 list-none">
+              {pinnedItems.map((item) => (
+                <li key={item.dataset_id}>
+                  <div 
+                    onClick={() => handleReopen(item)}
+                    className="flex flex-col gap-1 p-3 rounded-lg border border-outline-variant/50 hover:border-secondary/50 hover:bg-[#F0F7FF] transition-all group cursor-pointer"
+                  >
+                    <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary font-bold flex items-center gap-1.5">
+                      <span>{getDomainIcon(item.domain)}</span>
+                      <span className="truncate">{item.dataset_name}</span>
+                    </span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant text-[11px] font-semibold">
+                      Pulse: {item.business_pulse}/100 • {item.domain}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-slate-400 italic m-0">No top analysis records available.</p>
+          )}
         </Card>
 
         {/* Recently Opened */}
         <Card className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm">
-          <h3 className="font-label-caps text-label-caps text-on-surface-variant font-medium mb-4 m-0 uppercase tracking-wider">Recently Opened</h3>
-          <ul className="space-y-4 p-0 m-0 list-none">
-            <li className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
-                <Clock className="text-on-surface-variant" size={16} />
-              </div>
-              <div>
-                <a className="font-label-md text-label-md text-on-surface hover:text-secondary transition-colors block mb-0.5 font-medium" href="#">Q3 Revenue Churn Model</a>
-                <p className="font-body-sm text-body-sm text-on-surface-variant text-[12px] m-0">Opened 2 hours ago by You</p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
-                <Clock className="text-on-surface-variant" size={16} />
-              </div>
-              <div>
-                <a className="font-label-md text-label-md text-on-surface hover:text-secondary transition-colors block mb-0.5 font-medium" href="#">Customer Sentiment Q3</a>
-                <p className="font-body-sm text-body-sm text-on-surface-variant text-[12px] m-0">Opened yesterday by David C.</p>
-              </div>
-            </li>
-          </ul>
-        </Card>
-
-        {/* Recent Exports */}
-        <Card className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm">
-          <h3 className="font-label-caps text-label-caps text-on-surface-variant font-medium mb-4 m-0 uppercase tracking-wider">Recent Exports</h3>
-          <ul className="space-y-3 p-0 m-0 list-none">
-            <li className="flex items-center justify-between p-2 hover:bg-surface-container-low rounded-lg transition-colors group">
-              <div className="flex items-center gap-3">
-                <FileText className="text-[#E11D48] shrink-0" size={20} />
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Executive Summary</span>
-              </div>
-              <button className="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary cursor-pointer">
-                <Download size={18} />
-              </button>
-            </li>
-            <li className="flex items-center justify-between p-2 hover:bg-surface-container-low rounded-lg transition-colors group">
-              <div className="flex items-center gap-3">
-                <FileSpreadsheet className="text-[#16A34A] shrink-0" size={20} />
-                <span className="font-body-sm text-body-sm text-on-surface font-medium">Raw Dataset_v2</span>
-              </div>
-              <button className="opacity-0 group-hover:opacity-100 transition-opacity text-on-surface-variant hover:text-primary cursor-pointer">
-                <Download size={18} />
-              </button>
-            </li>
-          </ul>
+          <h3 className="font-label-caps text-label-caps text-on-surface-variant font-medium mb-4 m-0 uppercase tracking-wider">Recently Uploaded</h3>
+          {recentItems.length > 0 ? (
+            <ul className="space-y-4 p-0 m-0 list-none">
+              {recentItems.map((item) => (
+                <li 
+                  key={item.dataset_id} 
+                  onClick={() => handleReopen(item)}
+                  className="flex items-start gap-3 cursor-pointer group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-slate-50 border flex items-center justify-center shrink-0 text-sm">
+                    {getDomainIcon(item.domain)}
+                  </div>
+                  <div>
+                    <span className="font-label-md text-label-md text-on-surface group-hover:text-secondary transition-colors block mb-0.5 font-bold truncate max-w-[180px]">
+                      {item.dataset_name}
+                    </span>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant text-[11px] m-0 font-medium">
+                      {item.rows.toLocaleString()} rows • {item.domain}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-slate-400 italic m-0">No recent datasets listed.</p>
+          )}
         </Card>
       </aside>
     </main>

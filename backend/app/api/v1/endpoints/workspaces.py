@@ -22,6 +22,8 @@ def create_workspace(workspace_in: WorkspaceCreate, db: Session = Depends(get_db
     db.refresh(db_workspace)
     return db_workspace
 
+from app.models.workspace import Workspace, WorkspaceState
+
 @router.get("/", response_model=List[WorkspaceInDB])
 def get_workspaces(
     session_id: Optional[str] = None, 
@@ -30,7 +32,7 @@ def get_workspaces(
     """
     Retrieves all workspaces. Can be filtered by query parameter session_id.
     """
-    query = db.query(Workspace)
+    query = db.query(Workspace).filter(Workspace.status == WorkspaceState.READY)
     if session_id:
         query = query.filter(Workspace.session_id == session_id)
     return query.all()

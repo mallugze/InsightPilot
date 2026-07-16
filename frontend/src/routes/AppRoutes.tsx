@@ -14,6 +14,7 @@ import ReportsPage from '../features/reports/pages/ReportsPage';
 import AnalysisHistoryPage from '../features/history/pages/AnalysisHistoryPage';
 import WorkspacesPage from '../features/workspace/pages/WorkspacesPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
+import SettingsPage from '../features/profile/pages/SettingsPage';
 
 export const AppRoutes = () => {
   return (
@@ -89,20 +90,7 @@ export const AppRoutes = () => {
         <Route path="reports" element={<ReportsPage />} />
         <Route path="history" element={<AnalysisHistoryPage />} />
         <Route path="profile" element={<ProfilePage />} />
-        <Route
-          path="settings"
-          element={
-            <div className="space-y-6 text-left px-margin-page pt-8">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-900 m-0">Settings</h1>
-                <p className="text-slate-500 mt-1">Configure your local workspace details and credentials.</p>
-              </div>
-              <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm text-slate-600 text-sm">
-                <p>System configurations are managed inside the backend environment variables.</p>
-              </div>
-            </div>
-          }
-        />
+        <Route path="settings" element={<SettingsPage />} />
         <Route
           path="*"
           element={

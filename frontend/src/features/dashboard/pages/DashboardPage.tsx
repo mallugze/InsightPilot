@@ -512,74 +512,75 @@ export default function DashboardPage() {
         </section>
       )}
 
+
       {/* SECTION 3: Smart Charts & Outliers */}
       <section className="space-y-4">
         <h3 className="font-headline-md text-headline-md text-on-surface m-0 font-bold">Supporting Analytics</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
           {/* Timeline Trend Line Chart */}
-          <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
-            <div className="flex justify-between items-center mb-stack-md">
-              <div>
-                <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">
-                  {trends.has_trends ? `${trends.metric_name} Trend (${trends.period.toUpperCase()})` : "Timeline Trend"}
-                </h4>
-                {trends.has_trends && (
+          {trends.has_trends && (
+            <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
+              <div className="flex justify-between items-center mb-stack-md">
+                <div>
+                  <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">
+                    {trends.metric_name} Trend ({trends.period.toUpperCase()})
+                  </h4>
                   <span className="text-xs text-on-surface-variant">
                     Direction: <strong className="text-secondary">{trends.trend_direction}</strong> | Growth: <strong className="text-emerald-600">+{trends.growth_percent}%</strong>
                   </span>
-                )}
+                </div>
+                <MoreVertical className="text-on-surface-variant" size={16} />
               </div>
-              <MoreVertical className="text-on-surface-variant" size={16} />
-            </div>
-            
-            {trends.has_trends && trends.chart_data.length > 1 ? (
-              <div className="flex-1 relative flex flex-col justify-between pt-2">
-                {/* SVG Line & Area Graphic */}
-                <div className="flex-1 relative">
-                  <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
-                    <defs>
-                      <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2170e4" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#2170e4" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-                    
-                    {(() => {
-                      const maxVal = Math.max(...trends.chart_data.map(d => d.value), 1);
-                      const minVal = Math.min(...trends.chart_data.map(d => d.value), 0);
-                      const range = maxVal - minVal || 1;
+              
+              {trends.chart_data.length > 1 ? (
+                <div className="flex-1 relative flex flex-col justify-between pt-2">
+                  {/* SVG Line & Area Graphic */}
+                  <div className="flex-1 relative">
+                    <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#2170e4" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="#2170e4" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
                       
-                      const points = trends.chart_data.map((d, i) => {
-                        const x = (i / (trends.chart_data.length - 1)) * 100;
-                        const y = 45 - ((d.value - minVal) / range) * 38;
-                        return `${x},${y}`;
-                      }).join(' ');
+                      {(() => {
+                        const maxVal = Math.max(...trends.chart_data.map(d => d.value), 1);
+                        const minVal = Math.min(...trends.chart_data.map(d => d.value), 0);
+                        const range = maxVal - minVal || 1;
+                        
+                        const points = trends.chart_data.map((d, i) => {
+                          const x = (i / (trends.chart_data.length - 1)) * 100;
+                          const y = 45 - ((d.value - minVal) / range) * 38;
+                          return `${x},${y}`;
+                        }).join(' ');
 
-                      const areaPoints = `0,50 ${points} 100,50`;
-                      
-                      return (
-                        <>
-                          <polygon points={areaPoints} fill="url(#chartGradient)" />
-                          <polyline points={points} fill="none" stroke="#2170e4" strokeWidth="2.5" strokeLinecap="round" />
-                        </>
-                      );
-                    })()}
-                  </svg>
+                        const areaPoints = `0,50 ${points} 100,50`;
+                        
+                        return (
+                          <>
+                            <polygon points={areaPoints} fill="url(#chartGradient)" />
+                            <polyline points={points} fill="none" stroke="#2170e4" strokeWidth="2.5" strokeLinecap="round" />
+                          </>
+                        );
+                      })()}
+                    </svg>
+                  </div>
+                  {/* X Axis Labels */}
+                  <div className="flex justify-between text-[10px] text-on-surface-variant font-mono font-bold mt-2 border-t border-outline-variant/30 pt-1">
+                    <span>{trends.chart_data[0].date}</span>
+                    <span>{trends.chart_data[Math.floor(trends.chart_data.length / 2)].date}</span>
+                    <span>{trends.chart_data[trends.chart_data.length - 1].date}</span>
+                  </div>
                 </div>
-                {/* X Axis Labels */}
-                <div className="flex justify-between text-[10px] text-on-surface-variant font-mono font-bold mt-2 border-t border-outline-variant/30 pt-1">
-                  <span>{trends.chart_data[0].date}</span>
-                  <span>{trends.chart_data[Math.floor(trends.chart_data.length / 2)].date}</span>
-                  <span>{trends.chart_data[trends.chart_data.length - 1].date}</span>
+              ) : (
+                <div className="flex-1 flex flex-col justify-center items-center text-center text-on-surface-variant bg-surface-container-low/30 rounded-lg">
+                  <Info size={24} className="mb-2" />
+                  <span className="text-sm font-semibold">No date fields found to chart trends.</span>
                 </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col justify-center items-center text-center text-on-surface-variant bg-surface-container-low/30 rounded-lg">
-                <Info size={24} className="mb-2" />
-                <span className="text-sm font-semibold">No date fields found to chart trends.</span>
-              </div>
-            )}
-          </Card>
+              )}
+            </Card>
+          )}
 
           {/* Anomaly Alerts List */}
           <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
@@ -611,15 +612,15 @@ export default function DashboardPage() {
           </Card>
 
           {/* Correlation Grid (New Card) */}
-          <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-72 text-left hover:shadow-sm transition-shadow lg:col-span-2">
-            <div className="flex justify-between items-center mb-stack-md">
-              <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Calculated Metric Correlations (Pearson)</h4>
-              <Badge className="bg-secondary/10 text-secondary border border-secondary/15 font-semibold px-2 py-0.5 rounded text-xs">
-                Significant Relationships
-              </Badge>
-            </div>
-            
-            {correlations.correlations.length > 0 ? (
+          {correlations.correlations.length > 0 && (
+            <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-72 text-left hover:shadow-sm transition-shadow lg:col-span-2">
+              <div className="flex justify-between items-center mb-stack-md">
+                <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Calculated Metric Correlations (Pearson)</h4>
+                <Badge className="bg-secondary/10 text-secondary border border-secondary/15 font-semibold px-2 py-0.5 rounded text-xs">
+                  Significant Relationships
+                </Badge>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-md overflow-y-auto pr-1">
                 {correlations.correlations.map((corr, idx) => (
                   <div key={idx} className="flex gap-2.5 items-start text-xs border border-outline-variant/30 p-3 rounded-lg bg-surface-container-low/30">
@@ -636,15 +637,198 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="flex-1 flex flex-col justify-center items-center text-center text-on-surface-variant bg-surface-container-low/30 rounded-lg">
-                <Info size={24} className="mb-2" />
-                <span className="text-sm font-semibold">No significant correlation coefficients (r &gt;= 0.3) mapped between variables.</span>
-              </div>
-            )}
-          </Card>
+            </Card>
+          )}
         </div>
       </section>
+
+      {/* SECTION: Interactive Dataset Distributions */}
+      {analysis.semantic_profile?.first_5_rows && (
+        <section className="space-y-4 text-left">
+          <h3 className="font-headline-md text-headline-md text-on-surface m-0 font-bold">Interactive Dataset Distributions</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+            
+            {/* 1. Scatter Plot (Requires 2+ continuous metrics) */}
+            {analysis.semantic_profile.relationships?.primary_metrics?.length >= 2 && (
+              <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
+                <div className="flex justify-between items-center mb-stack-sm">
+                  <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Dynamic Scatter Plot</h4>
+                  <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded">Continuous Coords</Badge>
+                </div>
+                <p className="text-[10px] text-slate-500 mb-stack-md leading-relaxed m-0 font-medium">
+                  Plotting variables <code>{analysis.semantic_profile.relationships.primary_metrics[0]}</code> vs <code>{analysis.semantic_profile.relationships.primary_metrics[1]}</code> across preview records.
+                </p>
+                <div className="flex-1 border border-dashed rounded-lg relative bg-slate-50/50 p-2 overflow-hidden flex items-center justify-center">
+                  <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    {(() => {
+                      const colX = analysis.semantic_profile.relationships.primary_metrics[0];
+                      const colY = analysis.semantic_profile.relationships.primary_metrics[1];
+                      const rows = analysis.semantic_profile.first_5_rows;
+                      const valsX = rows.map((r: any) => parseFloat(r[colX]) || 0);
+                      const valsY = rows.map((r: any) => parseFloat(r[colY]) || 0);
+                      const minX = Math.min(...valsX);
+                      const maxX = Math.max(...valsX) || 1;
+                      const minY = Math.min(...valsY);
+                      const maxY = Math.max(...valsY) || 1;
+                      const rangeX = maxX - minX || 1;
+                      const rangeY = maxY - minY || 1;
+                      
+                      return rows.map((row: any, idx: number) => {
+                        const x = 10 + ((parseFloat(row[colX]) || 0) - minX) / rangeX * 80;
+                        const y = 90 - ((parseFloat(row[colY]) || 0) - minY) / rangeY * 80;
+                        return (
+                          <g key={idx}>
+                            <circle cx={x} cy={y} r="4" fill="#2170e4" className="hover:r-6 cursor-pointer transition-all" />
+                            <text x={x + 2} y={y - 2} fontSize="4" fill="#0f172a" fontWeight="bold">#{idx + 1}</text>
+                          </g>
+                        );
+                      });
+                    })()}
+                  </svg>
+                </div>
+              </Card>
+            )}
+
+            {/* 2. Histogram / Distribution Plot (Requires at least 1 numeric metric) */}
+            {analysis.semantic_profile.relationships?.primary_metrics?.length >= 1 && (
+              <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
+                <div className="flex justify-between items-center mb-stack-sm">
+                  <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Distribution Bar Plot</h4>
+                  <Badge className="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded">Continuous values</Badge>
+                </div>
+                <p className="text-[10px] text-slate-500 mb-stack-md leading-relaxed m-0 font-medium">
+                  Binning continuous values for main parameter <code>{analysis.semantic_profile.relationships.primary_metrics[0]}</code>.
+                </p>
+                <div className="flex-1 flex flex-col justify-end gap-3 pt-2">
+                  {(() => {
+                    const col = analysis.semantic_profile.relationships.primary_metrics[0];
+                    const rows = analysis.semantic_profile.first_5_rows;
+                    const vals = rows.map((r: any) => parseFloat(r[col]) || 0);
+                    const maxVal = Math.max(...vals) || 1;
+                    
+                    return rows.map((row: any, idx: number) => {
+                      const val = parseFloat(row[col]) || 0;
+                      const pct = Math.max(10, (val / maxVal) * 100);
+                      return (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between text-[9px] font-bold text-slate-700 font-mono">
+                            <span>Record #{idx + 1}</span>
+                            <span>{val}</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-secondary rounded-full" style={{ width: `${pct}%` }}></div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </Card>
+            )}
+
+            {/* 3. Class Distribution (Requires at least 1 categorical column) */}
+            {analysis.semantic_profile.relationships?.categorical_dimensions?.length >= 1 && (
+              <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
+                <div className="flex justify-between items-center mb-stack-sm">
+                  <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Class Distributions</h4>
+                  <Badge className="bg-purple-50 text-purple-700 border border-purple-100 text-[10px] font-bold px-2 py-0.5 rounded">Categorical</Badge>
+                </div>
+                <p className="text-[10px] text-slate-500 mb-stack-md leading-relaxed m-0 font-medium">
+                  Distribution split across key target classifications <code>{analysis.semantic_profile.relationships.categorical_dimensions[0]}</code>.
+                </p>
+                <div className="flex-1 flex flex-col justify-center gap-4">
+                  {(() => {
+                    const col = analysis.semantic_profile.relationships.categorical_dimensions[0];
+                    const rows = analysis.semantic_profile.first_5_rows;
+                    const counts: Record<string, number> = {};
+                    rows.forEach((r: any) => {
+                      const val = String(r[col] || 'N/A');
+                      counts[val] = (counts[val] || 0) + 1;
+                    });
+                    const maxCount = Math.max(...Object.values(counts));
+                    
+                    return Object.entries(counts).map(([label, count], idx) => {
+                      const pct = (count / maxCount) * 100;
+                      return (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold text-slate-700 font-mono">
+                            <span>{label}</span>
+                            <span>{count} occurrences</span>
+                          </div>
+                          <div className="h-3 w-full bg-slate-100 rounded-lg overflow-hidden">
+                            <div className="h-full bg-primary" style={{ width: `${pct}%` }}></div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </Card>
+            )}
+
+            {/* 4. Missing Value Heatmap (Always rendered to show audit profile) */}
+            <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow">
+              <div className="flex justify-between items-center mb-stack-sm">
+                <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Missing Value Heatmap</h4>
+                <Badge className="bg-indigo-50 text-indigo-700 border border-indigo-100 text-[10px] font-bold px-2 py-0.5 rounded">Audit Grid</Badge>
+              </div>
+              <p className="text-[10px] text-slate-500 mb-stack-md leading-relaxed m-0 font-medium">
+                Completeness audit matrix across all parsed column profiles.
+              </p>
+              <div className="flex-1 grid grid-cols-2 gap-2 overflow-y-auto pr-1">
+                {analysis.semantic_profile.features.map((f, i) => {
+                  const nullCount = f.null_values_count || 0;
+                  const isClean = nullCount === 0;
+                  return (
+                    <div key={i} className={`p-2 rounded-lg border flex flex-col justify-between text-[10px] font-semibold transition-all ${
+                      isClean ? 'bg-emerald-50/50 border-emerald-100 text-emerald-800' : 'bg-orange-50/50 border-orange-100 text-orange-800'
+                    }`}>
+                      <span className="truncate font-mono font-bold text-slate-800">{f.name}</span>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-[8px] uppercase font-bold tracking-tight">Status</span>
+                        <span className="font-mono font-bold">{isClean ? "100% OK" : `${nullCount} NULLS`}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* 5. Visual Correlation Matrix/Heatmap (Only shown if correlations exist) */}
+            {correlations.correlations?.length > 0 && (
+              <Card className="bg-surface rounded-lg card-border p-gutter flex flex-col h-80 text-left hover:shadow-sm transition-shadow md:col-span-2 lg:col-span-2">
+                <div className="flex justify-between items-center mb-stack-sm">
+                  <h4 className="font-label-md text-label-md text-on-surface m-0 font-bold">Correlation Matrix Heatmap</h4>
+                  <Badge className="bg-teal-50 text-teal-700 border border-teal-100 text-[10px] font-bold px-2 py-0.5 rounded">r coefficients</Badge>
+                </div>
+                <p className="text-[10px] text-slate-500 mb-stack-md leading-relaxed m-0 font-medium">
+                  Colored intensity matrix representing directional strengths of numeric relationships.
+                </p>
+                <div className="flex-1 grid grid-cols-3 gap-2 overflow-y-auto">
+                  {correlations.correlations.map((corr: any, idx: number) => {
+                    const coef = corr.coefficient || 0;
+                    const colorStyle = coef > 0.5 ? 'bg-teal-100 border-teal-200 text-teal-900' :
+                                       coef > 0.2 ? 'bg-emerald-50 border-emerald-100 text-emerald-900' :
+                                       coef < -0.5 ? 'bg-rose-100 border-rose-200 text-rose-900' :
+                                       coef < -0.2 ? 'bg-orange-50 border-orange-100 text-orange-900' :
+                                       'bg-slate-50 border-slate-100 text-slate-900';
+                    return (
+                      <div key={idx} className={`p-2.5 rounded-lg border flex flex-col justify-between text-[10px] ${colorStyle}`}>
+                        <div className="font-bold truncate mb-1 text-slate-800">{corr.column_a} &bull; {corr.column_b}</div>
+                        <div className="flex justify-between items-center mt-2">
+                          <span className="font-mono text-[9px] font-bold">{coef > 0 ? "+" : ""}{coef.toFixed(2)}</span>
+                          <span className="text-[8px] uppercase font-bold px-1.5 py-0.5 rounded bg-white/70 border border-black/5">{corr.strength}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            )}
+
+          </div>
+        </section>
+      )}
 
       {/* SECTION 4: Prioritized Recommendations */}
       <section className="space-y-4">

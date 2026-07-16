@@ -74,6 +74,9 @@ def analyze_trends(df: pd.DataFrame, column_metadata: Dict[str, Any]) -> Dict[st
         if timeline.empty:
             return empty_result
             
+        # Coerce any null/NaN aggregates to 0 prior to regression calculations
+        timeline = timeline.fillna(0)
+        
         # 1. Calculate Growth Percent
         first_val = float(timeline["value"].iloc[0])
         last_val = float(timeline["value"].iloc[-1])
@@ -99,7 +102,6 @@ def analyze_trends(df: pd.DataFrame, column_metadata: Dict[str, Any]) -> Dict[st
                 trend_direction = "Downward"
                 
         # 4. Format chart-ready output array (safe-serialize NaN values)
-        timeline = timeline.fillna(0)
         chart_data = []
         for _, row in timeline.iterrows():
             chart_data.append({

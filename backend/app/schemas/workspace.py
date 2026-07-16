@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
+from app.models.workspace import WorkspaceState
 
 class WorkspaceBase(BaseModel):
     workspace_name: str
@@ -14,6 +15,7 @@ class WorkspaceUpdate(BaseModel):
 class WorkspaceInDB(WorkspaceBase):
     id: int
     session_id: str
+    status: WorkspaceState
     created_at: datetime
     updated_at: datetime
 

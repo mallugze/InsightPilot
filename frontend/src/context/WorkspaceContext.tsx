@@ -220,6 +220,7 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
   const confirmWorkspace = (name: string) => {
     setWorkspaceName(name);
     setIsWorkspaceConfirmed(true);
+    setSessionResumed(true);
     localStorage.setItem(LOCAL_STORAGE_KEYS.WORKSPACE_NAME, name);
     localStorage.setItem(LOCAL_STORAGE_KEYS.WORKSPACE_CONFIRMED, 'true');
     addNotification('Workspace Activated', `Active environment shifted to ${name}.`, 'success');
