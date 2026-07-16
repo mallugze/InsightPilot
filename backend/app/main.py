@@ -32,7 +32,23 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "X-Session-ID"],
 )
 
+from app.exceptions import DatasetValidationError
+
 # Centralized Exception Handlers
+@app.exception_handler(DatasetValidationError)
+async def dataset_validation_error_handler(request: Request, exc: DatasetValidationError):
+    logger.error(f"Dataset validation error: {exc.reason} - {exc.details}")
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={
+            "status": "validation_failed",
+            "reason": exc.reason,
+            "details": exc.details,
+            "success": False,
+            "error": f"{exc.reason}: {', '.join(exc.details)}"
+        }
+    )
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     logger.warning(f"HTTP exception: status_code={exc.status_code} detail={exc.detail}")

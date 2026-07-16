@@ -131,13 +131,41 @@ def test_analysis_pipeline_sales_success():
     res_cached = response_cached.json()
     assert res_cached["id"] == res["id"]
     assert res_cached["business_pulse"] == res["business_pulse"]
+
+def test_analysis_pipeline_wine_success():
+    clean_temp_uploads()
     
-    print("All backend analysis pipeline unit tests PASSED successfully!")
+    # 1. Read mock wine content
+    with open("wine_data.csv", "r") as f:
+        csv_content = f.read()
+        
+    # 2. Ingest via /api/v1/upload
+    response_upload = client.post(
+        "/api/v1/upload",
+        files={"file": ("wine_data.csv", io.BytesIO(csv_content.encode("utf-8")), "text/csv")},
+        headers={"X-Session-ID": "test-session-wine-analysis"}
+    )
+    assert response_upload.status_code == 201
+    upload_data = response_upload.json()
+    dataset_id = upload_data["dataset_id"]
+    
+    # 3. Trigger analysis via POST /api/v1/analyze/{dataset_id}
+    response_analyze = client.post(f"/api/v1/analyze/{dataset_id}")
+    assert response_analyze.status_code == 201
+    res = response_analyze.json()
+    
+    # Assert successful analysis completion
+    assert "business_pulse" in res
+    assert "health_label" in res
+    assert "semantic_profile" in res
+    assert "dataset_domain" in res
 
 if __name__ == "__main__":
     print("Running backend analysis tests...")
     try:
         test_analysis_pipeline_sales_success()
+        test_analysis_pipeline_wine_success()
+        print("All backend unit tests PASSED successfully!")
     finally:
         clean_temp_uploads()
         

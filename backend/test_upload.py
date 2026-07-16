@@ -122,6 +122,51 @@ def test_get_datasets_metadata():
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
+def test_upload_wine_headerless():
+    # Simulate Wine CSV (Row 1 is metadata info, Row 2 onwards is actual data)
+    file_content = (
+        "3,2,class_0,class_1\n"
+        "14.23,1.71\n"
+        "13.2,1.78\n"
+        "13.16,2.36\n"
+    )
+    files = {"file": ("wine_data.csv", io.BytesIO(file_content.encode("utf-8")), "text/csv")}
+    headers = {"X-Session-ID": "test-session-wine"}
+    response = client.post("/api/v1/upload", files=files, headers=headers)
+    
+    assert response.status_code == 201
+    data = response.json()
+    # It should detect no header, skip line 1, parse 3 rows of data, and generate safe placeholder column names
+    assert data["rows"] == 3
+    assert data["columns"] == 2
+    
+    cols = data["column_metadata"]["columns"]
+    assert cols[0]["name"] == "numeric_1"
+    assert cols[1]["name"] == "numeric_2"
+    
+    report = data["column_metadata"]["validation_report"]
+    assert report["header_detected"] is False
+    assert report["encoding"] == "utf-8"
+    assert report["delimiter"] == ","
+    assert report["validation_status"] == "success"
+
+def test_upload_inconsistent_lengths_malformed():
+    # Inconsistent column lengths (malformed CSV)
+    file_content = (
+        "col1,col2,col3\n"
+        "1,2\n"
+        "1,2,3,4,5\n"
+    )
+    files = {"file": ("malformed.csv", io.BytesIO(file_content.encode("utf-8")), "text/csv")}
+    headers = {"X-Session-ID": "test-session-malformed"}
+    response = client.post("/api/v1/upload", files=files, headers=headers)
+    
+    # It should return HTTP 400 validation_failed
+    assert response.status_code == 400
+    data = response.json()
+    assert data["status"] == "validation_failed"
+    assert len(data["details"]) > 0
+
 if __name__ == "__main__":
     print("Running backend upload tests...")
     try:
@@ -131,6 +176,8 @@ if __name__ == "__main__":
         test_upload_duplicate_headers()
         test_upload_csv_success()
         test_get_datasets_metadata()
+        test_upload_wine_headerless()
+        test_upload_inconsistent_lengths_malformed()
         print("All backend unit tests PASSED successfully!")
     finally:
         clean_temp_uploads()

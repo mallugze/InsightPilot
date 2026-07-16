@@ -48,24 +48,8 @@ def load_dataframe_from_dataset(dataset: Dataset) -> pd.DataFrame:
     ext = ext.lower()
     
     try:
-        if ext == ".csv":
-            try:
-                df = pd.read_csv(file_path, encoding="utf-8")
-            except UnicodeDecodeError:
-                df = pd.read_csv(file_path, encoding="latin-1")
-        else:
-            df = pd.read_excel(file_path)
-            
-        # Coerce column data types based on validation profile to eliminate mixed type crashes
-        col_metadata = dataset.column_metadata or {"columns": []}
-        for col_info in col_metadata.get("columns", []):
-            col_name = col_info.get("name")
-            if col_name in df.columns:
-                if col_info.get("is_numeric") or col_info.get("type") in ["integer", "float"]:
-                    df[col_name] = pd.to_numeric(df[col_name], errors='coerce')
-                elif col_info.get("is_date") or col_info.get("type") == "datetime":
-                    df[col_name] = pd.to_datetime(df[col_name], errors='coerce')
-                    
+        from app.services.ingestion_engine import load_and_validate_dataset
+        df, _ = load_and_validate_dataset(file_path, ext, dataset.original_filename)
         return df
     except Exception as e:
         logger.error(f"Error loading temporary dataset file: {str(e)}")

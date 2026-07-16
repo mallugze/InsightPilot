@@ -6,9 +6,11 @@ from sqlalchemy.orm import Session
 
 from app.models.dataset import Dataset, ProcessingState
 from app.services.storage_service import save_temp_file, cleanup_file
-from app.services.validation_service import validate_file_metadata, load_and_validate_dataframe
+from app.services.validation_service import validate_file_metadata
+from app.services.ingestion_engine import load_and_validate_dataset
 from app.services.dataset_classifier import classify_dataset
 from app.services.profiling_service import profile_dataset
+from app.exceptions import DatasetValidationError
 
 logger = logging.getLogger("upload_service")
 
@@ -91,8 +93,8 @@ def process_dataset_upload(
         db.commit()
         db.refresh(db_dataset)
 
-        # 3. Load & Validate Pandas DataFrame
-        df = load_and_validate_dataframe(temp_file_path, ext)
+        # 3. Load & Validate Dataset using Universal Ingestion Engine
+        df, validation_report = load_and_validate_dataset(temp_file_path, ext, file.filename)
 
         # Update state to PROCESSING
         db_dataset.status = ProcessingState.PROCESSING
@@ -103,6 +105,9 @@ def process_dataset_upload(
 
         # 5. Profile dataset
         profile_results = profile_dataset(df, dataset_type)
+        
+        # Attach the validation report to column metadata
+        profile_results["column_metadata"]["validation_report"] = validation_report
 
         # 6. Save final profiled metadata inside the database and mark as READY
         db_dataset.dataset_type = dataset_type
@@ -132,6 +137,15 @@ def process_dataset_upload(
         }
         
         return summary
+
+    except DatasetValidationError as dve:
+        logger.error(f"Dataset validation failed: {dve.reason} - {dve.details}")
+        if db_dataset:
+            db_dataset.status = ProcessingState.FAILED
+            db.commit()
+        # Cleanup file on validation failure
+        cleanup_file(temp_file_path)
+        raise dve
 
     except HTTPException as he:
         # Expected HTTP Validation Exceptions
