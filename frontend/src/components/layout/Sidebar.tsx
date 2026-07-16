@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { 
   TrendingUp, 
   LayoutDashboard, 
@@ -14,7 +14,8 @@ import { useWorkspace } from '../../context/WorkspaceContext';
 import { Button } from '../ui/Button';
 
 export const Sidebar = () => {
-  const { isWorkspaceConfirmed, workspaceName, profile } = useWorkspace();
+  const navigate = useNavigate();
+  const { isWorkspaceConfirmed, workspaceName, profile, resetOnboardingKeepProfile } = useWorkspace();
 
   // Progressive Disclosure Nav Items
   const navItems = isWorkspaceConfirmed
@@ -48,7 +49,10 @@ export const Sidebar = () => {
       {isWorkspaceConfirmed && (
         <Button 
           className="w-full bg-primary text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md font-medium mb-6 hover:bg-inverse-surface transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
-          onClick={() => alert('New analysis session started')}
+          onClick={() => {
+            resetOnboardingKeepProfile();
+            navigate('/upload');
+          }}
         >
           <Plus size={20} />
           New Analysis

@@ -28,7 +28,7 @@ export default function AnalysisHistoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
-  const { startUpload, completeAnalysis, confirmWorkspace } = useWorkspace();
+  const { startUpload, completeAnalysis, confirmWorkspace, resetOnboardingKeepProfile } = useWorkspace();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +64,9 @@ export default function AnalysisHistoryPage() {
       item.columns,
       item.business_pulse || 95,
       `Reopened existing database analysis for dataset '${item.dataset_name}'.`,
-      item.workspace_name
+      item.workspace_name,
+      String(item.dataset_id),
+      item.dataset_name
     );
     
     // 3. Confirm active workspace
@@ -124,7 +126,10 @@ export default function AnalysisHistoryPage() {
             </p>
           </div>
           <Button 
-            onClick={() => navigate('/')}
+            onClick={() => {
+              resetOnboardingKeepProfile();
+              navigate('/upload');
+            }}
             className="flex bg-primary text-on-primary py-2.5 px-5 rounded-lg font-label-md text-label-md font-medium hover:bg-inverse-surface transition-colors shadow-sm items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
           >
             <Plus size={18} />

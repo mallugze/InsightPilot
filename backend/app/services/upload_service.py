@@ -51,12 +51,26 @@ def process_dataset_upload(
     try:
         # Update Workspace status to UPLOADING if workspace exists
         from app.models.workspace import Workspace, WorkspaceState
-        if workspace_id:
-            workspace = db.query(Workspace).filter(Workspace.id == workspace_id).first()
-            if workspace:
-                workspace.status = WorkspaceState.UPLOADING
+        if not workspace_id:
+            # Check if there is an existing workspace for this session
+            workspace = db.query(Workspace).filter(Workspace.session_id == session_id).first()
+            if not workspace:
+                # Create a default workspace for this session
+                workspace = Workspace(
+                    workspace_name="My Workspace",
+                    session_id=session_id,
+                    status=WorkspaceState.NEW
+                )
                 db.add(workspace)
                 db.commit()
+                db.refresh(workspace)
+            workspace_id = workspace.id
+
+        workspace = db.query(Workspace).filter(Workspace.id == workspace_id).first()
+        if workspace:
+            workspace.status = WorkspaceState.UPLOADING
+            db.add(workspace)
+            db.commit()
 
         # Create database entry in VALIDATING state
         db_dataset = Dataset(

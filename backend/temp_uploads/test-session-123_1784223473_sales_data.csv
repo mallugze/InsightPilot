@@ -1,4 +1,0 @@
-transaction_id,sales_amount,customer_name,rate_percent,revenue_usd
-1,150.50,Alice,0.15,$150.50
-2,250.00,Bob,0.20,$250.00
-3,350.25,Charlie,0.10,$350.25

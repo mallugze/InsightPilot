@@ -118,8 +118,27 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
         
     logger.info(f"Running analytical profiling on dataset ID {dataset_id} ({dataset.original_filename})")
 
-    # Update Workspace status to ANALYZING
+    # Ensure dataset is associated with a workspace
     from app.models.workspace import Workspace, WorkspaceState
+    if not dataset.workspace_id:
+        # Check if there is an existing workspace for this session
+        workspace = db.query(Workspace).filter(Workspace.session_id == dataset.session_id).first()
+        if not workspace:
+            # Create a default workspace for this session
+            workspace = Workspace(
+                workspace_name="My Workspace",
+                session_id=dataset.session_id,
+                status=WorkspaceState.NEW
+            )
+            db.add(workspace)
+            db.commit()
+            db.refresh(workspace)
+        dataset.workspace_id = workspace.id
+        db.add(dataset)
+        db.commit()
+        db.refresh(dataset)
+
+    # Update Workspace status to ANALYZING
     if dataset.workspace_id:
         workspace = db.query(Workspace).filter(Workspace.id == dataset.workspace_id).first()
         if workspace:
@@ -177,30 +196,54 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
         insights = serialize_pandas_objects(insights)
         sem_profile = serialize_pandas_objects(sem_profile)
 
-        # 6. Save and Cache the analysis results
-        analysis_result = AnalysisResult(
-            workspace_id=dataset.workspace_id,
-            dataset_id=dataset.id,
-            business_pulse=pulse["score"],
-            health_label=pulse["health_label"],
-            pulse_breakdown=pulse["breakdown"],
-            kpis=kpis,
-            hero=hero_zero,
-            zero=hero_zero,  # Hero and zero combined inside hero_zero dict for simple caching
-            trends=trends,
-            anomalies=anomalies,
-            correlations=correlations,
-            recommendations=recommendations,
-            insights=insights,
-            semantic_profile=sem_profile,
-            dataset_domain=sem_profile["domain"],
-            entity=sem_profile["entity"],
-            feature_metadata=sem_profile["features"],
-            relationship_metadata=sem_profile["relationships"],
-            ml_readiness=sem_profile["ml_readiness"],
-            chart_suggestions=sem_profile["visualization_intent"],
-            kpi_suggestions=sem_profile["kpi_suggestions"]
-        )
+        # 6. Save and Cache the analysis results (Idempotent update/insert)
+        existing_result = db.query(AnalysisResult).filter(AnalysisResult.dataset_id == dataset.id).first()
+        if existing_result:
+            existing_result.workspace_id = dataset.workspace_id
+            existing_result.business_pulse = pulse["score"]
+            existing_result.health_label = pulse["health_label"]
+            existing_result.pulse_breakdown = pulse["breakdown"]
+            existing_result.kpis = kpis
+            existing_result.hero = hero_zero
+            existing_result.zero = hero_zero
+            existing_result.trends = trends
+            existing_result.anomalies = anomalies
+            existing_result.correlations = correlations
+            existing_result.recommendations = recommendations
+            existing_result.insights = insights
+            existing_result.semantic_profile = sem_profile
+            existing_result.dataset_domain = sem_profile["domain"]
+            existing_result.entity = sem_profile["entity"]
+            existing_result.feature_metadata = sem_profile["features"]
+            existing_result.relationship_metadata = sem_profile["relationships"]
+            existing_result.ml_readiness = sem_profile["ml_readiness"]
+            existing_result.chart_suggestions = sem_profile["visualization_intent"]
+            existing_result.kpi_suggestions = sem_profile["kpi_suggestions"]
+            analysis_result = existing_result
+        else:
+            analysis_result = AnalysisResult(
+                workspace_id=dataset.workspace_id,
+                dataset_id=dataset.id,
+                business_pulse=pulse["score"],
+                health_label=pulse["health_label"],
+                pulse_breakdown=pulse["breakdown"],
+                kpis=kpis,
+                hero=hero_zero,
+                zero=hero_zero,  # Hero and zero combined inside hero_zero dict for simple caching
+                trends=trends,
+                anomalies=anomalies,
+                correlations=correlations,
+                recommendations=recommendations,
+                insights=insights,
+                semantic_profile=sem_profile,
+                dataset_domain=sem_profile["domain"],
+                entity=sem_profile["entity"],
+                feature_metadata=sem_profile["features"],
+                relationship_metadata=sem_profile["relationships"],
+                ml_readiness=sem_profile["ml_readiness"],
+                chart_suggestions=sem_profile["visualization_intent"],
+                kpi_suggestions=sem_profile["kpi_suggestions"]
+            )
         
         # Auto-rename associated Workspace and mark status as READY
         if dataset.workspace_id:
@@ -210,11 +253,26 @@ def run_dataset_analysis(dataset_id: int, db: Session) -> AnalysisResult:
                 workspace.status = WorkspaceState.READY
                 db.add(workspace)
                 
-        db.add(analysis_result)
-        db.commit()
-        db.refresh(analysis_result)
-        logger.info(f"Successfully calculated and cached analysis report for dataset {dataset_id}")
-        return analysis_result
+        try:
+            db.add(analysis_result)
+            db.commit()
+            db.refresh(analysis_result)
+            logger.info(f"Successfully calculated and cached analysis report for dataset {dataset_id}")
+            return analysis_result
+        except Exception as commit_error:
+            db.rollback()
+            logger.warning(f"Commit conflict for dataset {dataset_id}, fetching existing AnalysisResult: {str(commit_error)}")
+            existing = db.query(AnalysisResult).filter(AnalysisResult.dataset_id == dataset.id).first()
+            if existing:
+                # Also ensure the workspace status is set to READY
+                if dataset.workspace_id:
+                    workspace = db.query(Workspace).filter(Workspace.id == dataset.workspace_id).first()
+                    if workspace and workspace.status != WorkspaceState.READY:
+                        workspace.status = WorkspaceState.READY
+                        db.add(workspace)
+                        db.commit()
+                return existing
+            raise commit_error
 
     except Exception as e:
         logger.exception(f"Unexpected exception during dataset analysis pipeline for dataset ID {dataset_id}")

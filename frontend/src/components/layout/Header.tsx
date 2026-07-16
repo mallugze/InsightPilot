@@ -41,7 +41,7 @@ export const Header = () => {
       {/* Brand & Sub-Navigation */}
       <div className="flex items-center gap-stack-lg">
         <h2 
-          onClick={() => navigate('/')} 
+          onClick={() => navigate(isWorkspaceConfirmed ? '/dashboard' : '/')} 
           className="font-headline-md text-headline-md font-semibold text-on-surface m-0 cursor-pointer"
         >
           InsightPilot

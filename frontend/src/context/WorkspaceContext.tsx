@@ -53,7 +53,9 @@ interface WorkspaceContextType {
     colsCount: number,
     businessPulse: number,
     topInsight: string,
-    suggestedWorkspaceName: string
+    suggestedWorkspaceName: string,
+    datasetId?: string,
+    fileName?: string
   ) => void;
   confirmWorkspace: (name: string) => void;
   resetOnboarding: () => void;
@@ -196,20 +198,25 @@ export const WorkspaceProvider = ({ children }: { children: React.ReactNode }) =
     colsCount: number,
     businessPulse: number,
     topInsight: string,
-    suggestedWorkspaceName: string
+    suggestedWorkspaceName: string,
+    datasetId?: string,
+    fileName?: string
   ) => {
-    if (uploadState) {
+    setUploadState(prev => {
+      const base = prev || { fileName: fileName || 'Reopened Dataset', fileSize: 'N/A' };
       const updatedState: DatasetUploadState = {
-        ...uploadState,
+        ...base,
+        datasetId: datasetId || base.datasetId,
+        fileName: fileName || base.fileName,
         datasetType,
         rowsCount,
         colsCount,
         businessPulse,
         topInsight,
       };
-      setUploadState(updatedState);
       localStorage.setItem(LOCAL_STORAGE_KEYS.UPLOAD_STATE, JSON.stringify(updatedState));
-    }
+      return updatedState;
+    });
     setAnalysisState('completed');
     setWorkspaceName(suggestedWorkspaceName);
     localStorage.setItem(LOCAL_STORAGE_KEYS.ANALYSIS_STATE, 'completed');

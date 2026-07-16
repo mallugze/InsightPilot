@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useWorkspace } from '../../../context/WorkspaceContext';
 import { Card } from '../../../components/ui/Card';
 import { runDatasetAnalysis } from '../../../services/analysis';
@@ -26,15 +26,17 @@ export default function AnalysisProgressPage() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResultResponse | null>(null);
+  const hasTriggered = useRef(false);
 
   useEffect(() => {
+    if (!uploadState?.datasetId || hasTriggered.current) return;
+    hasTriggered.current = true;
+
     const triggerBackendAnalysis = async () => {
       try {
-        if (uploadState?.datasetId) {
-          const datasetIdNum = parseInt(uploadState.datasetId, 10);
-          const result = await runDatasetAnalysis(datasetIdNum);
-          setAnalysisResult(result);
-        }
+        const datasetIdNum = parseInt(uploadState.datasetId, 10);
+        const result = await runDatasetAnalysis(datasetIdNum);
+        setAnalysisResult(result);
       } catch (err: any) {
         console.error("Backend analysis failed:", err);
         setAnalysisError(err.message || "Failed to calculate business metrics on the backend.");
