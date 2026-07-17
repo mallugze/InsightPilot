@@ -215,6 +215,91 @@ export default function UploadPage() {
               <span className="font-medium text-slate-800 mt-1">{selectedFile.colsCount}</span>
             </div>
           </div>
+          
+          {/* Universal Ingestion Validation Report */}
+          {selectedFile.columnMetadata?.validation_report && (
+            <div className="mt-6 border-t border-slate-100 pt-6 space-y-4 text-left">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-semibold text-slate-800 uppercase tracking-wider m-0">Ingestion & Validation Report</h4>
+                <span className="text-[10px] px-2.5 py-0.5 bg-emerald-50 text-emerald-700 font-bold rounded-full border border-emerald-100 uppercase tracking-wide">
+                  {selectedFile.columnMetadata.validation_report.validation_status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 rounded-xl p-4 text-xs">
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Encoding</span>
+                  <span className="font-semibold text-slate-700 block mt-1 uppercase">
+                    {selectedFile.columnMetadata.validation_report.encoding || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Delimiter</span>
+                  <span className="font-semibold text-slate-700 block mt-1">
+                    {selectedFile.columnMetadata.validation_report.delimiter === '\t' ? 'Tab (\\t)' : 
+                     selectedFile.columnMetadata.validation_report.delimiter === ',' ? 'Comma (,)' : 
+                     selectedFile.columnMetadata.validation_report.delimiter === ';' ? 'Semicolon (;)' : 
+                     selectedFile.columnMetadata.validation_report.delimiter === '|' ? 'Pipe (|)' : 
+                     selectedFile.columnMetadata.validation_report.delimiter || 'N/A'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Header State</span>
+                  <span className="font-semibold text-slate-700 block mt-1">
+                    {selectedFile.columnMetadata.validation_report.header_detected ? 'Header Detected' : 'Headerless (Recovered)'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 font-bold block uppercase tracking-wider text-[9px]">Completeness</span>
+                  <span className="font-semibold text-slate-700 block mt-1">
+                    {selectedFile.columnMetadata.validation_report.missing_values?.completeness_score ?? 100}%
+                  </span>
+                </div>
+              </div>
+
+              {/* Inferred Types Panel */}
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Inferred Column Types</span>
+                <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
+                  {Object.entries(selectedFile.columnMetadata.validation_report.inferred_types || {}).map(([col, type]: [any, any]) => (
+                    <div key={col} className="flex items-center gap-1.5 px-2 py-0.5 bg-white border border-slate-200 rounded-lg text-xs">
+                      <span className="font-medium text-slate-700 text-[11px]">{col}:</span>
+                      <span className="text-blue-600 font-bold text-[9px] uppercase bg-blue-50 px-1 py-0.5 rounded tracking-wide">
+                        {type}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Warnings and Fixes */}
+              {((selectedFile.columnMetadata.validation_report.warnings && selectedFile.columnMetadata.validation_report.warnings.length > 0) ||
+                (selectedFile.columnMetadata.validation_report.recommended_fixes && selectedFile.columnMetadata.validation_report.recommended_fixes.length > 0)) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  {selectedFile.columnMetadata.validation_report.warnings.length > 0 && (
+                    <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-4 text-xs space-y-2">
+                      <span className="text-amber-800 font-bold uppercase tracking-wider block text-[9px]">Ingestion Warnings</span>
+                      <ul className="list-disc pl-4 space-y-1 text-amber-700 m-0">
+                        {selectedFile.columnMetadata.validation_report.warnings.map((w: string, i: number) => (
+                          <li key={i}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {selectedFile.columnMetadata.validation_report.recommended_fixes.length > 0 && (
+                    <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-xs space-y-2">
+                      <span className="text-blue-800 font-bold uppercase tracking-wider block text-[9px]">Auto-Applied Normalizations</span>
+                      <ul className="list-disc pl-4 space-y-1 text-blue-700 m-0">
+                        {selectedFile.columnMetadata.validation_report.recommended_fixes.map((f: string, i: number) => (
+                          <li key={i}>{f}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
             <Button

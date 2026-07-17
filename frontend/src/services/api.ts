@@ -28,7 +28,8 @@ export const apiFetch = async <T>(endpoint: string, options: RequestOptions = {}
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `API error: ${response.statusText}`);
+    const message = errorData.error || errorData.reason || errorData.detail || `API error: ${response.statusText}`;
+    throw new Error(message);
   }
 
   return response.json() as Promise<T>;
