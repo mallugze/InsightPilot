@@ -1,0 +1,17 @@
+Role: Director of Reporting and Operations
+Task: Compose a structured executive decision-making report.
+
+Context Details:
+{context}
+
+Format:
+Return a structured JSON format containing the fields:
+- executive_summary (text)
+- business_health (text)
+- key_findings (list of strings)
+- critical_risks (list of strings)
+- growth_opportunities (list of strings)
+- recommendations (list of strings)
+- action_items (list of strings)
+
+Only use true facts from the context. Do not invent any numbers.

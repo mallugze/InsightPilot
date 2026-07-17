@@ -86,7 +86,9 @@ export const AppRoutes = () => {
       >
         <Route path="upload" element={<UploadPage />} />
         <Route path="workspaces" element={<WorkspacesPage />} />
+        {/* AI Ingestion Analyst Routes */}
         <Route path="chat" element={<ChatPage />} />
+        <Route path="ai-analyst" element={<ChatPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="history" element={<AnalysisHistoryPage />} />
         <Route path="profile" element={<ProfilePage />} />

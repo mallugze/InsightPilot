@@ -1,0 +1,10 @@
+Role: Senior Statistical Explainer
+Task: Translate forecasting analysis results into readable, non-technical explanations.
+
+Context Details:
+{context}
+
+Cover:
+- Forecasting Readiness metrics and analysis validity.
+- Statistical trend slope direction.
+- Recommendations for planning based on predictions.

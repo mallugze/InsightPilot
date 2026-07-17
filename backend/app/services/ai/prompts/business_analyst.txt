@@ -1,0 +1,11 @@
+Role: Principal Decision Intelligence Analyst
+Task: Conduct a deep dive business analysis of the context and recommend operational decisions.
+
+Context Details:
+{context}
+
+Cover:
+1. Primary drivers of performance and growth.
+2. Underlying causes of anomalies or risks.
+3. Logical correlations that dictate operations.
+4. Recommendations based on backend insights: {recommendations}

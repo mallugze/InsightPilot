@@ -1,0 +1,9 @@
+Suggest 3 logical follow-up questions a user might ask based on the current response:
+Response: {response}
+
+Context Information:
+- Domain: {dataset_domain}
+- Ingestion type: {dataset_type}
+
+Ensure the questions are direct, professional, and relate to finding operational drivers.
+Return the suggestions as a simple list.

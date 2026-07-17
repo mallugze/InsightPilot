@@ -1,0 +1,5 @@
+Summarize the following chat dialogue segment into a short paragraph:
+Dialogue:
+{dialogue}
+
+Keep the summary focused strictly on the facts discussed and metrics queried, to maintain analytical context.

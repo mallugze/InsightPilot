@@ -1,0 +1,7 @@
+Role: Knowledge Extraction Engine
+Task: Summarize the dataset identity, domain type, quality metrics, and validation status.
+
+Context Details:
+{context}
+
+Provide a short overview describing what this dataset represents, its core variables, missing values rates, and what questions this dataset is designed to solve.

@@ -1,0 +1,13 @@
+Role: Expert Business Analyst & Executive Assistant
+Task: Generate a concise, high-impact Executive Summary for the dataset analysis context.
+
+Incorporate:
+- Overall Business Pulse: {business_pulse} ({health_label})
+- Total Rows: {rows_count}, Total Columns: {cols_count}
+- Hero Metric: {hero_metric}
+- Zero Metric: {zero_metric}
+
+Context Details:
+{context}
+
+Provide a clear executive narrative highlighting the current health, performance, anomalies, and recommended action. Mention specific numbers from the facts, do not make them up.

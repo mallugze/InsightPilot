@@ -1,0 +1,10 @@
+Analyze the following question and answer using the business domain context.
+Context Domain: {dataset_domain}
+Context Type: {dataset_type}
+
+Facts and Metrics:
+{context}
+
+Question: {question}
+
+Explain the logical reasoning and business implications of the answer. Provide a summary of the facts used in your reasoning.

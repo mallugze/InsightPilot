@@ -23,7 +23,7 @@ export const Sidebar = () => {
         { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
         { to: '/workspaces', label: 'Workspace', icon: FolderOpen },
         { to: '/history', label: 'Analysis History', icon: History },
-        { to: '/chat', label: 'AI Analyst', icon: MessageSquareCode },
+        { to: '/ai-analyst', label: 'AI Analyst', icon: MessageSquareCode },
         { to: '/reports', label: 'Reports', icon: FileText },
         { to: '/settings', label: 'Settings', icon: Settings },
       ]

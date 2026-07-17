@@ -9,6 +9,7 @@ from app.database.session import Base
 from app.models.workspace import Workspace
 from app.models.dataset import Dataset
 from app.models.analysis_result import AnalysisResult
+from app.models.ai_memory import Conversation, ChatMessage
 from app.core.config import settings
 
 # This is the Alembic Config object, which provides
