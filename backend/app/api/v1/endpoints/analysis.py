@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 
@@ -12,19 +12,24 @@ from app.models.workspace import Workspace
 router = APIRouter()
 
 @router.get("/history", response_model=List[Dict[str, Any]])
-def get_analysis_history(db: Session = Depends(get_db)):
+def get_analysis_history(
+    db: Session = Depends(get_db),
+    x_session_id: Optional[str] = Header(None)
+):
     """
     Returns unified historical analysis results joined with dataset metadata.
     """
     from app.models.workspace import WorkspaceState
-    results = (
+    query = (
         db.query(Dataset, AnalysisResult, Workspace)
         .join(AnalysisResult, Dataset.id == AnalysisResult.dataset_id)
         .join(Workspace, Dataset.workspace_id == Workspace.id)
         .filter(Workspace.status == WorkspaceState.READY)
-        .order_by(Dataset.uploaded_at.desc())
-        .all()
     )
+    if x_session_id:
+        query = query.filter(Dataset.session_id == x_session_id)
+        
+    results = query.order_by(Dataset.uploaded_at.desc()).all()
     
     history_list = []
     for dataset, analysis, workspace in results:
