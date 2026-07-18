@@ -3,6 +3,10 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database.session import Base
 
+# Ensure SQLAlchemy registers dependent tables in metadata
+from app.models.workspace import Workspace
+from app.models.analysis_result import AnalysisResult
+
 class Conversation(Base):
     __tablename__ = "ai_conversations"
 

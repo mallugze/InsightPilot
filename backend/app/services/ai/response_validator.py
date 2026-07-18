@@ -10,6 +10,7 @@ class AIValidationException(ValueError):
     """Exception raised when the AI response contradicts backend facts."""
     def __init__(self, message: str, details: List[str]):
         super().__init__(message)
+        self.message = message
         self.details = details
 
 class ResponseValidator:

@@ -5,7 +5,6 @@ import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { 
   User, 
-  Settings as SettingsIcon, 
   Sliders, 
   Bell, 
   Link2, 

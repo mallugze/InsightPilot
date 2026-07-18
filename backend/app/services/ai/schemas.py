@@ -14,6 +14,7 @@ class ResponseMetadata(BaseModel):
     cache_status: str = Field(..., description="Response delivery cache state ('hit' or 'miss')")
     validation_status: str = Field(..., description="Hallucination check outcome ('success' or 'warning')")
     processing_time: float = Field(..., description="Server execution time in seconds")
+    fallback_triggered: bool = Field(False, description="True if LLM failed and fallback mock was utilized")
 
 class ChatRequest(BaseModel):
     question: Optional[str] = Field(None, description="User query question query string")

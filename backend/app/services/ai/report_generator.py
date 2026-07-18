@@ -30,12 +30,12 @@ class ReportGenerator:
         raw_response = self.provider.generate(prompt, context=context)
 
         # 3. Validate response text against facts (prevent hallucinations)
+        validation_warning = None
         try:
             self.validator.validate(raw_response, context)
         except Exception as e:
-            logger.error(f"Response validation failed during report generation: {str(e)}")
-            # Raise validator errors or re-raise
-            raise e
+            logger.warning(f"Response validation flagged warning during report generation: {str(e)}")
+            validation_warning = f"Caution: Generative analysis returned contradiction warnings. Factual context states: Overall Pulse is {context.business_pulse}/100 and rows count is {context.rows_count}."
 
         # 4. Parse response as JSON to fill AIReport structure
         try:
@@ -53,8 +53,12 @@ class ReportGenerator:
             logger.info("Successfully parsed LLM report response into JSON structure.")
             
             # Map fields safely
+            exec_sum = parsed.get("executive_summary", "")
+            if validation_warning:
+                exec_sum = f"{validation_warning}\n\n{exec_sum}"
+                
             return AIReport(
-                executive_summary=parsed.get("executive_summary", ""),
+                executive_summary=exec_sum,
                 business_health=parsed.get("business_health", ""),
                 key_findings=parsed.get("key_findings", []),
                 critical_risks=parsed.get("critical_risks", []),

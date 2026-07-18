@@ -3,17 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Search, 
-  ChevronDown, 
-  Heart, 
-  MoreVertical, 
-  ChevronLeft, 
-  ChevronRight, 
   Pin, 
-  Clock, 
-  FileText, 
-  FileSpreadsheet, 
-  Download,
-  AlertTriangle,
   RefreshCw
 } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
@@ -25,7 +15,6 @@ import { apiFetch } from '../../../services/api';
 export default function AnalysisHistoryPage() {
   const [historyItems, setHistoryItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   
   const { startUpload, completeAnalysis, confirmWorkspace, resetOnboardingKeepProfile } = useWorkspace();
@@ -38,7 +27,7 @@ export default function AnalysisHistoryPage() {
         setHistoryItems(data);
       } catch (err: any) {
         console.error("Failed to load analysis history:", err);
-        setError(err.message || "Failed to load database analysis history. Verify backend server.");
+        console.warn("Failed to load history list.");
       } finally {
         setLoading(false);
       }

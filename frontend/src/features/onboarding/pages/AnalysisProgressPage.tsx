@@ -34,7 +34,7 @@ export default function AnalysisProgressPage() {
 
     const triggerBackendAnalysis = async () => {
       try {
-        const datasetIdNum = parseInt(uploadState.datasetId, 10);
+        const datasetIdNum = parseInt(uploadState.datasetId || '', 10);
         const result = await runDatasetAnalysis(datasetIdNum);
         setAnalysisResult(result);
       } catch (err: any) {

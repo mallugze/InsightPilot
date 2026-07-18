@@ -39,7 +39,9 @@ class ContextBuilder:
         logger.info(f"Building AI context for analysis ID: {analysis_id}")
         
         # 1. Query database for AnalysisResult
-        analysis = db.query(AnalysisResult).filter(AnalysisResult.id == analysis_id).first()
+        analysis = db.query(AnalysisResult).filter(
+            (AnalysisResult.id == analysis_id) | (AnalysisResult.dataset_id == analysis_id)
+        ).first()
         if not analysis:
             logger.error(f"Analysis result ID {analysis_id} not found in database.")
             raise HTTPException(

@@ -87,7 +87,9 @@ export interface AnalysisResultResponse {
       native_type: string;
       confidence: number;
       possible_meaning: string;
+      null_values_count?: number;
     }>;
+    first_5_rows?: Array<Record<string, any>>;
     relationships: {
       primary_metrics: string[];
       grouping_dimensions: string[];

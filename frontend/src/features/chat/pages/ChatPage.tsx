@@ -7,21 +7,14 @@ import {
   Plus, 
   Trash2, 
   Brain, 
-  ShieldCheck, 
   AlertCircle, 
-  CheckCircle2, 
-  Compass, 
-  Activity, 
-  TrendingUp, 
   FileSpreadsheet, 
   BookOpen, 
   Sparkles,
   ExternalLink,
   Loader2,
-  Clock,
-  Briefcase
+  Clock
 } from 'lucide-react';
-import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 
 interface Message {
@@ -36,7 +29,7 @@ interface Message {
   citations?: any[];
   confidence?: {
     score: number;
-    validation_success: bool;
+    validation_success: boolean;
     citation_coverage_pct: number;
     context_completeness_pct: number;
     validation_factors: string[];
@@ -46,11 +39,12 @@ interface Message {
     cache_status: string;
     validation_status: string;
     processing_time: number;
+    fallback_triggered?: boolean;
   };
 }
 
 interface ConversationSummary {
-  conversation_id: str;
+  conversation_id: string;
   workspace_id?: number;
   analysis_id?: number;
   created_at: string;
@@ -59,7 +53,7 @@ interface ConversationSummary {
 }
 
 export default function ChatPage() {
-  const { isWorkspaceConfirmed, uploadState, workspaceName } = useWorkspace();
+  const { uploadState } = useWorkspace();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // States
@@ -394,6 +388,14 @@ export default function ChatPage() {
                             </span>
                             <span>Cache: {msg.metadata.cache_status}</span>
                             <span>Validation: {msg.metadata.validation_status}</span>
+                          </div>
+                        )}
+
+                        {/* Fallback warning banner */}
+                        {msg.metadata && msg.metadata.fallback_triggered && (
+                          <div className="mt-2 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 flex items-center gap-2">
+                            <AlertCircle size={14} className="text-amber-600 shrink-0" />
+                            <span><strong>Mock Fallback:</strong> The production Gemini service is currently unconfigured or rate-limited. Local mock was utilized.</span>
                           </div>
                         )}
                       </div>

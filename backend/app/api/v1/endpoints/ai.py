@@ -86,10 +86,28 @@ def ai_chat_interaction(request: ChatRequest, db: Session = Depends(get_db)):
             detail="Field 'question' or 'prompt' is required in chat payload."
         )
 
-    # 1. Initialize memory session
+    # 1. Initialize memory session and resolve database IDs
     memory_manager = ConversationMemoryManager(db)
     conv_id = request.conversation_id or str(uuid.uuid4())
-    memory_manager.create_conversation(conv_id, analysis_id=request.analysis_id)
+    
+    resolved_analysis_id = None
+    resolved_workspace_id = None
+    if request.analysis_id:
+        from app.models.analysis_result import AnalysisResult
+        try:
+            analysis = db.query(AnalysisResult).filter(
+                (AnalysisResult.id == request.analysis_id) | (AnalysisResult.dataset_id == request.analysis_id)
+            ).first()
+            if analysis:
+                resolved_analysis_id = analysis.id
+                resolved_workspace_id = analysis.workspace_id
+            else:
+                resolved_analysis_id = request.analysis_id
+        except Exception as e:
+            logger.warning(f"Error resolving analysis ID reference: {str(e)}")
+            resolved_analysis_id = request.analysis_id
+
+    memory_manager.create_conversation(conv_id, workspace_id=resolved_workspace_id, analysis_id=resolved_analysis_id)
     
     # 2. Get past chat messages to formulate intelligent context selection
     past_messages = []
@@ -105,18 +123,18 @@ def ai_chat_interaction(request: ChatRequest, db: Session = Depends(get_db)):
 
     # 3. Load analysis context
     context = None
-    if request.analysis_id:
+    if resolved_analysis_id:
         try:
-            context = context_builder.build_context(request.analysis_id, db)
+            context = context_builder.build_context(resolved_analysis_id, db)
         except Exception as e:
-            logger.warning(f"Could not build context for request analysis ID {request.analysis_id}: {str(e)}")
+            logger.warning(f"Could not build context for request analysis ID {resolved_analysis_id}: {str(e)}")
 
     # 4. Format prompt
     if context:
         prompt_text = prompt_manager.format_prompt(
             "executive_chat",
             history=history_context,
-            context=context.model_dump_json(indent=2, default=str),
+            context=context.model_dump_json(indent=2),
             question=user_query
         )
     else:
@@ -219,14 +237,34 @@ def ai_chat_interaction(request: ChatRequest, db: Session = Depends(get_db)):
         validation_factors=factors
     )
 
+    fallback_triggered = getattr(raw_response, 'fallback_triggered', False)
+
     # 10. observabilty metadata
     elapsed = float(round(time.time() - start_time, 3))
     metadata = ResponseMetadata(
-        provider="gemini",
+        provider="gemini-fallback-mock" if fallback_triggered else "gemini",
         cache_status=cache_status,
         validation_status=validation_status,
-        processing_time=elapsed
+        processing_time=elapsed,
+        fallback_triggered=fallback_triggered
     )
+
+    # Log structured AI request details
+    request_end_time = time.time()
+    logger.info(json.dumps({
+        "event": "ai_request",
+        "provider": metadata.provider,
+        "model": llm_provider.model_name,
+        "request_start": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(start_time)),
+        "request_end": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(request_end_time)),
+        "latency_seconds": elapsed,
+        "cache_status": cache_status,
+        "prompt_size_chars": len(prompt_text),
+        "response_size_chars": len(raw_response),
+        "token_usage": "N/A",
+        "validation_result": validation_status,
+        "fallback_triggered": fallback_triggered
+    }))
 
     return ChatResponse(
         answer=answer,

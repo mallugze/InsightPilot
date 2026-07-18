@@ -10,3 +10,4 @@ pandas
 numpy
 openpyxl
 python-multipart
+google-generativeai
