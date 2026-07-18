@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWorkspace } from '../../../context/WorkspaceContext';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
@@ -7,7 +7,6 @@ import {
   User, 
   Sliders, 
   Bell, 
-  Link2, 
   Info, 
   Check,
   Moon,
@@ -16,7 +15,7 @@ import {
 
 export default function SettingsPage() {
   const { profile, saveProfile } = useWorkspace();
-  const [activeTab, setActiveTab] = useState<'profile' | 'theme' | 'workspace' | 'analysis' | 'notifications' | 'api' | 'about'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'theme' | 'workspace' | 'analysis' | 'notifications' | 'about'>('profile');
   
   // Profile local state
   const [fullName, setFullName] = useState(profile?.fullName || '');
@@ -24,13 +23,23 @@ export default function SettingsPage() {
   const [company, setCompany] = useState(profile?.companyName || '');
   
   // Custom preferences states
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('color-theme') as 'light' | 'dark') || 'light';
+  });
   const [sessionTimeout, setSessionTimeout] = useState('30 Minutes');
   const [mlScoring, setMlScoring] = useState(true);
   const [sigThreshold, setSigThreshold] = useState(0.05);
   const [bellNotifs, setBellNotifs] = useState(true);
-  const [apiUrl, setApiUrl] = useState('http://localhost:8000/api');
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('color-theme', theme);
+  }, [theme]);
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +54,6 @@ export default function SettingsPage() {
     { id: 'workspace', name: 'Workspaces & Session', icon: <Sliders size={18} /> },
     { id: 'analysis', name: 'Analysis Criteria', icon: <Sliders size={18} /> },
     { id: 'notifications', name: 'Notification Triggers', icon: <Bell size={18} /> },
-    { id: 'api', name: 'API Configurations', icon: <Link2 size={18} /> },
     { id: 'about', name: 'About Platform', icon: <Info size={18} /> },
   ] as const;
 
@@ -264,27 +272,6 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              {/* API Configuration Tab */}
-              {activeTab === 'api' && (
-                <div className="space-y-6">
-                  <div className="border-b pb-3">
-                    <h3 className="text-base font-bold text-slate-800 m-0">API Configurations</h3>
-                    <p className="text-xs text-slate-500 m-0">Configure backend server endpoints and gateway settings.</p>
-                  </div>
-                  
-                  <div className="space-y-4 pt-4 text-xs font-semibold">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">FastAPI Backend Origin Base URL</label>
-                      <input 
-                        type="text" 
-                        className="border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-slate-800 font-mono"
-                        value={apiUrl}
-                        onChange={(e) => setApiUrl(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* About Tab */}
               {activeTab === 'about' && (

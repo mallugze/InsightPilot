@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, HelpCircle, User, FolderOpen, Settings, LogOut, Trash2 } from 'lucide-react';
+import { Bell, User, FolderOpen, Settings, LogOut, Trash2 } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 
 export const Header = () => {
@@ -111,11 +111,6 @@ export const Header = () => {
             </div>
           )}
         </div>
-
-        {/* Help Circle */}
-        <button className="text-on-surface-variant hover:text-primary transition-all p-1.5 rounded-lg hover:bg-surface-container-low cursor-pointer">
-          <HelpCircle size={18} />
-        </button>
 
         {/* Profile Avatar Trigger dropdown */}
         <div className="relative">

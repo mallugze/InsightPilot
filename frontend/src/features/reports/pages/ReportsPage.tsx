@@ -274,7 +274,7 @@ export default function ReportsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {reportsList.map((rep) => (
-          <Card key={rep.id} className="bg-white p-6 border rounded-xl flex flex-col justify-between h-56 shadow-sm hover:shadow-md transition-shadow">
+          <Card key={rep.id} className="bg-white p-6 border rounded-xl flex flex-col justify-between min-h-[15rem] h-full shadow-sm hover:shadow-md transition-shadow">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-slate-50 rounded-lg">{rep.icon}</div>

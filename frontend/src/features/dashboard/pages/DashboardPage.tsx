@@ -24,9 +24,8 @@ export default function DashboardPage() {
   const [analysis, setAnalysis] = useState<AnalysisResultResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reanalyzing, setReanalyzing] = useState(false);
 
-  const fetchAnalysis = async (forceTrigger = false) => {
+  const fetchAnalysis = async () => {
     if (!uploadState?.datasetId) {
       setError("No active dataset uploaded. Please return to landing flow to ingest a CSV/Excel file.");
       setLoading(false);
@@ -34,21 +33,14 @@ export default function DashboardPage() {
     }
     
     try {
-      if (forceTrigger) {
-        setReanalyzing(true);
-      }
       const datasetIdNum = parseInt(uploadState.datasetId, 10);
       
       let data: AnalysisResultResponse;
-      if (forceTrigger) {
+      try {
+        data = await getAnalysisResult(datasetIdNum);
+      } catch {
+        // If not cached yet, trigger POST
         data = await runDatasetAnalysis(datasetIdNum);
-      } else {
-        try {
-          data = await getAnalysisResult(datasetIdNum);
-        } catch {
-          // If not cached yet, trigger POST
-          data = await runDatasetAnalysis(datasetIdNum);
-        }
       }
       
       setAnalysis(data);
@@ -58,7 +50,6 @@ export default function DashboardPage() {
       setError(err.message || "Failed to load active analysis profile from backend.");
     } finally {
       setLoading(false);
-      setReanalyzing(false);
     }
   };
 
@@ -81,7 +72,7 @@ export default function DashboardPage() {
         <AlertTriangle className="text-orange-500" size={40} />
         <h2 className="font-display text-2xl font-bold text-primary">Unable to load analytics</h2>
         <p className="font-sans text-sm text-on-surface-variant max-w-md">{error || "Verify backend service runs and dataset is loaded."}</p>
-        <Button onClick={() => fetchAnalysis(true)} className="bg-primary text-white font-semibold px-4 py-2 rounded-lg mt-2">
+        <Button onClick={() => fetchAnalysis()} className="bg-primary text-white font-semibold px-4 py-2 rounded-lg mt-2">
           Retry Analysis Pipeline
         </Button>
       </main>
@@ -174,16 +165,6 @@ export default function DashboardPage() {
                 <p>No deterministic insights found. Dataset columns lack semantic parameters.</p>
               )}
             </div>
-          </div>
-          <div className="mt-stack-lg flex gap-stack-md">
-            <Button 
-              onClick={() => fetchAnalysis(true)}
-              disabled={reanalyzing}
-              className="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-2 font-semibold hover:bg-slate-800 transition-colors"
-            >
-              <RefreshCw size={16} className={reanalyzing ? "animate-spin" : ""} />
-              {reanalyzing ? "Re-calculating..." : "Recalculate Metrics"}
-            </Button>
           </div>
         </div>
       </section>
