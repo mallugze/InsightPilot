@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, HelpCircle, User, FolderOpen, Settings, LogOut, Trash2 } from 'lucide-react';
+import { Bell, HelpCircle, User, FolderOpen, Settings, LogOut, Trash2 } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 
 export const Header = () => {
@@ -51,26 +51,12 @@ export const Header = () => {
             <a className="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 h-full flex items-center" href="#strategy">
               Global Strategy
             </a>
-            <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-all h-full flex items-center" href="#forecast">
-              Q3 Forecast
-            </a>
           </nav>
         )}
       </div>
 
       {/* Action Controls */}
       <div className="flex items-center gap-stack-md relative">
-        
-        {/* Ask AI Search Input (Disabled for now) */}
-        <div className="relative focus:ring-2 ring-secondary/10 rounded-full opacity-60">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-          <input 
-            disabled
-            className="pl-10 pr-4 py-1.5 bg-surface-container rounded-full border-none text-xs w-64 focus:outline-none cursor-not-allowed font-medium text-slate-500" 
-            placeholder="Ask AI (Enabled in Sprint 6)" 
-            type="text"
-          />
-        </div>
 
         {/* Notification Bell */}
         <div className="relative">
@@ -135,13 +121,9 @@ export const Header = () => {
         <div className="relative">
           <button 
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2 shrink-0 cursor-pointer focus:outline-none hover:opacity-90"
+            className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center border border-outline-variant ml-2 shrink-0 cursor-pointer focus:outline-none hover:opacity-90"
           >
-            <img 
-              alt="Executive User Profile" 
-              className="w-full h-full object-cover" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7zhrT7PA6dYAmBTESh3paEBKpPT9ALQfhkpfbseggdXJqlsZNTvCX8o5RMW7WZlyKRX3dauqujIZHlwaBM7D4swnAaW-FBiVSxXHz5WcnzyJQ-o8A0M4nEgUDTQ6faVOHX799JavsvVPvVx3U48IQKxhWrPyPrJOxXW7G-7AePs4Af5c9zceU9mVyclITI98Z-3eO7FGZsm_9XLVC03k877u46rG0mM4ecRyXaI5QaSd5LUnjXaBykg"
-            />
+            <User size={16} className="text-on-surface-variant" />
           </button>
 
           {/* Profile Dropdown Menu */}

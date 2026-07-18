@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Zap,
   ArrowRight,
-  PlayCircle,
   Lock,
   FileText,
   Activity,
@@ -42,17 +41,17 @@ export default function LandingPage() {
               InsightPilot
             </span>
             <div className="hidden md:flex items-center gap-stack-md ml-stack-lg">
-              <a className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#features">Features</a>
-              <a className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#workflow">How It Works</a>
-              <a className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#security">Security</a>
-              <a className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#pricing">Pricing</a>
-              <a className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 cursor-pointer active:opacity-70 font-body-md text-body-md" href="#about">About</a>
+              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#features">Features</a>
+              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#workflow">How It Works</a>
+              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#security">Security</a>
+              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#pricing">Pricing</a>
+              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#about">About</a>
             </div>
           </div>
           <div className="flex items-center gap-stack-md">
             <a 
               onClick={handleStartApp} 
-              className="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-on-primary transition-colors duration-200 font-body-md text-body-md hidden md:block cursor-pointer"
+              className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 font-body-md text-body-md hidden md:block cursor-pointer"
             >
               Sign In
             </a>
@@ -86,13 +85,6 @@ export default function LandingPage() {
                 >
                   Start Free
                   <ArrowRight size={18} />
-                </Button>
-                <Button 
-                  onClick={handleStartApp} 
-                  className="bg-transparent text-primary border border-outline font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-container transition-all flex items-center justify-center gap-2"
-                >
-                  <PlayCircle size={18} />
-                  Watch Demo
                 </Button>
               </div>
             </div>
@@ -293,12 +285,6 @@ export default function LandingPage() {
                 className="bg-on-primary text-primary-container font-label-md text-label-md px-8 py-4 rounded-lg hover:bg-surface-container transition-all"
               >
                 Start Free Trial
-              </Button>
-              <Button 
-                onClick={handleStartApp} 
-                className="bg-transparent text-on-primary border border-on-primary-container font-label-md text-label-md px-8 py-4 rounded-lg hover:bg-primary-fixed/10 transition-all"
-              >
-                Contact Sales
               </Button>
             </div>
           </div>

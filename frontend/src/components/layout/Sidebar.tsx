@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { 
   TrendingUp, 
@@ -8,7 +9,10 @@ import {
   Settings, 
   Plus,
   Upload,
-  MessageSquareCode
+  MessageSquareCode,
+  User,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useWorkspace } from '../../context/WorkspaceContext';
 import { Button } from '../ui/Button';
@@ -16,6 +20,16 @@ import { Button } from '../ui/Button';
 export const Sidebar = () => {
   const navigate = useNavigate();
   const { isWorkspaceConfirmed, workspaceName, profile, resetOnboardingKeepProfile } = useWorkspace();
+  
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    return localStorage.getItem('sidebar-collapsed') === 'true';
+  });
+
+  const toggleSidebar = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', String(newState));
+  };
 
   // Progressive Disclosure Nav Items
   const navItems = isWorkspaceConfirmed
@@ -33,29 +47,42 @@ export const Sidebar = () => {
       ];
 
   return (
-    <nav className="h-screen w-64 border-r border-outline-variant bg-surface-container-lowest flex flex-col p-4 gap-2 z-50 sticky top-0 shrink-0">
+    <nav className={`h-screen border-r border-outline-variant bg-surface-container-lowest flex flex-col p-4 gap-2 z-50 sticky top-0 shrink-0 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-4 py-4 mb-4">
-        <div className="h-8 w-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
-          <TrendingUp size={20} />
+      <div className={`flex items-center justify-between py-2 mb-4 ${isCollapsed ? 'px-0' : 'px-4'}`}>
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="h-8 w-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
+            <TrendingUp size={20} />
+          </div>
+          {!isCollapsed && (
+            <div className="text-left">
+              <div className="text-headline-md font-headline-md font-semibold text-primary leading-tight">InsightPilot</div>
+              <div className="text-label-caps font-label-caps text-on-surface-variant tracking-wider">Decision Intelligence</div>
+            </div>
+          )}
         </div>
-        <div className="text-left">
-          <div className="text-headline-md font-headline-md font-semibold text-primary leading-tight">InsightPilot</div>
-          <div className="text-label-caps font-label-caps text-on-surface-variant tracking-wider">Decision Intelligence</div>
-        </div>
+        <button 
+          onClick={toggleSidebar}
+          className={`p-1.5 rounded-lg hover:bg-surface-container-low text-on-surface-variant hover:text-primary transition-colors cursor-pointer shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}
+        >
+          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
       </div>
 
-      {/* New Analysis Button (only visible after onboarding is completed) */}
+      {/* New Analysis Button */}
       {isWorkspaceConfirmed && (
         <Button 
-          className="w-full bg-primary text-on-primary py-2.5 px-4 rounded-lg font-label-md text-label-md font-medium mb-6 hover:bg-inverse-surface transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+          className={`bg-primary text-on-primary font-medium mb-6 hover:bg-inverse-surface transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer ${
+            isCollapsed ? 'w-12 h-12 rounded-full p-0 mx-auto' : 'w-full py-2.5 px-4 rounded-lg text-label-md'
+          }`}
           onClick={() => {
             resetOnboardingKeepProfile();
             navigate('/upload');
           }}
+          title={isCollapsed ? "New Analysis" : undefined}
         >
           <Plus size={20} />
-          New Analysis
+          {!isCollapsed && <span>New Analysis</span>}
         </Button>
       )}
 
@@ -67,8 +94,11 @@ export const Sidebar = () => {
             <NavLink
               key={item.to}
               to={item.to}
+              title={isCollapsed ? item.label : undefined}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 transition-colors duration-200 rounded-lg group ${
+                `flex items-center transition-colors duration-200 rounded-lg group ${
+                  isCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-2'
+                } ${
                   isActive
                     ? 'text-secondary font-bold bg-surface-container-low border-r-2 border-secondary'
                     : 'text-on-surface-variant hover:text-primary hover:bg-surface-container-low opacity-90 scale-[0.99] duration-150'
@@ -76,28 +106,30 @@ export const Sidebar = () => {
               }
             >
               <Icon size={18} className="group-active:scale-[0.98] transition-transform shrink-0" />
-              <span className="font-body-md text-body-md">{item.label}</span>
+              {!isCollapsed && <span className="font-body-md text-body-md text-left flex-1 truncate">{item.label}</span>}
             </NavLink>
           );
         })}
       </div>
 
-      {/* Profile Section (Elena Rostova or customized profile) */}
+      {/* Profile Section */}
       <div className="mt-auto pt-4 border-t border-outline-variant/50">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors">
-          <img 
-            className="w-8 h-8 rounded-full object-cover border border-outline-variant shrink-0" 
-            alt="User Avatar" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1R6mVnj-9I2q9qpSljtnkmpu355R7TD8JL_ASuAmbTg6TwW1_JCxvZ6N3RV9iDtpn9ZShYz1ox_OKC6GzOUl6_y0ZjjgEI0emUG4gzgTRZLi66dbPf9arbRv3BsnIYK7rgKcBz1o8cpUzHga9eloqZVszQuDB9gaYfyhuMNcTuxeyGmdU6llYpujSIndiVeZyBrcP8qJ87-_msxfHmo91rLOrfEW-Kp_-jwlEsNT_E1DlvruCm3zLQQ"
-          />
-          <div className="flex flex-col text-left">
-            <span className="font-label-md text-label-md text-on-surface">
-              {profile?.fullName || 'Guest User'}
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px]">
-              {workspaceName || 'No Workspace'}
-            </span>
+        <div className={`flex items-center rounded-lg hover:bg-surface-container-low cursor-pointer transition-colors ${
+          isCollapsed ? 'justify-center p-2' : 'gap-3 px-4 py-3'
+        }`}>
+          <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center border border-outline-variant shrink-0 text-on-surface-variant">
+            <User size={16} />
           </div>
+          {!isCollapsed && (
+            <div className="flex flex-col text-left overflow-hidden">
+              <span className="font-label-md text-label-md text-on-surface truncate">
+                {profile?.fullName || 'Guest User'}
+              </span>
+              <span className="font-body-sm text-body-sm text-on-surface-variant text-[12px] truncate">
+                {workspaceName || 'No Workspace'}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </nav>

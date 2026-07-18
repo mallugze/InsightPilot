@@ -217,7 +217,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-6.5rem)] flex gap-4 text-left -mt-4 -mx-margin-page pb-4 overflow-hidden">
+    <div className="h-[calc(100vh-6.5rem)] flex gap-4 text-left p-4 overflow-hidden w-full">
       {/* 1. Left Sidebar: Previous Conversations */}
       <div className="w-64 border-r border-slate-200 bg-slate-50 flex flex-col p-4 shrink-0">
         <Button
