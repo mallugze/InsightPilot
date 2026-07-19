@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+.git
+.gitignore
+.pytest_cache
+test.db
+temp_uploads/*
+*.log

@@ -308,7 +308,7 @@ export default function ReportsPage() {
           </Button>
 
           <a 
-            href={`http://localhost:8000/api/v1/datasets/${uploadState.datasetId}/download`}
+            href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/v1/datasets/${uploadState.datasetId}/download`}
             target="_blank"
             rel="noreferrer"
             className="flex-1 bg-primary text-on-primary hover:bg-inverse-surface font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-pointer text-sm text-center decoration-none"

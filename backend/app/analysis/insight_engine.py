@@ -41,7 +41,7 @@ def generate_insights(
         )
         if kpis.get("attrition_rate", 0.0) > 0:
             insights.append(
-                f"Statistical attrition rate sits at {kpis.get("attrition_rate", 0.0)}%, "
+                f"Statistical attrition rate sits at {kpis.get('attrition_rate', 0.0)}%, "
                 f"which marks the percentage of left/terminated staff contracts."
             )
     elif dataset_type == "Finance":
