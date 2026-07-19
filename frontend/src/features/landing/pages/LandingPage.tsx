@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import {
-  Zap,
   ArrowRight,
   Lock,
   FileText,
@@ -36,22 +35,20 @@ export default function LandingPage() {
           <div className="flex items-center gap-gutter">
             <span 
               onClick={handleStartApp} 
-              className="font-display-lg text-headline-md tracking-tighter text-primary dark:text-on-primary cursor-pointer"
+              className="font-display-lg text-headline-md tracking-tighter text-black cursor-pointer"
             >
               InsightPilot
             </span>
             <div className="hidden md:flex items-center gap-stack-md ml-stack-lg">
-              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#features">Features</a>
-              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#workflow">How It Works</a>
-              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#security">Security</a>
-              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#pricing">Pricing</a>
-              <a className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#about">About</a>
+              <a className="text-black hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#features">Features</a>
+              <a className="text-black hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#workflow">How It Works</a>
+              <a className="text-black hover:text-primary transition-colors duration-200 cursor-pointer font-body-md text-body-md" href="#about">About</a>
             </div>
           </div>
           <div className="flex items-center gap-stack-md">
             <a 
               onClick={handleStartApp} 
-              className="text-slate-800 dark:text-slate-200 hover:text-primary transition-colors duration-200 font-body-md text-body-md hidden md:block cursor-pointer"
+              className="text-black hover:text-primary transition-colors duration-200 font-body-md text-body-md hidden md:block cursor-pointer"
             >
               Sign In
             </a>
@@ -70,10 +67,6 @@ export default function LandingPage() {
         <section className="hero-gradient relative pt-16 pb-32 px-margin-page overflow-hidden">
           <div className="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-section-gap items-center relative z-10">
             <div className="flex flex-col gap-stack-lg">
-              <Badge className="inline-flex items-center gap-2 bg-surface-container py-1 px-3 rounded-full w-fit border border-surface-variant">
-                <Zap className="text-secondary-container animate-pulse" size={16} />
-                <span className="font-label-caps text-label-caps text-on-surface-variant">NEW: MULTI-FILE ANALYSIS</span>
-              </Badge>
               <h1 className="font-display-lg text-display-lg text-primary leading-tight">See Beyond the Numbers.</h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
                 InsightPilot transforms spreadsheets and business datasets into explainable insights, executive briefs, and AI-powered recommendations in minutes.
@@ -275,7 +268,7 @@ export default function LandingPage() {
           <div className="bg-primary-container rounded-2xl p-12 md:p-20 text-center relative overflow-hidden flex flex-col items-center">
             {/* Subtle background pattern for CTA */}
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "24px 24px" }}></div>
-            <h2 className="font-display-lg text-headline-lg text-on-primary mb-6 relative z-10">Ready to Understand Your Business Better?</h2>
+            <h2 className="font-display-lg text-headline-lg text-on-primary-container mb-6 relative z-10">Ready to Understand Your Business Better?</h2>
             <p className="font-body-lg text-body-lg text-on-primary-container max-w-2xl mx-auto mb-10 relative z-10">
               Join forward-thinking enterprise teams who have replaced endless dashboard digging with clear, actionable intelligence.
             </p>

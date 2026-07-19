@@ -158,3 +158,79 @@ h1, h2, h3, h4, h5, h6 {
 *:not(input):not(textarea):not([contenteditable="true"]) {
   caret-color: transparent !important;
 }
+
+/* Production-grade Slate-based Dark Theme Color Palette & Utility Overrides */
+.dark {
+  --color-background: #090e1a;
+  --color-on-background: #f8fafc;
+
+  --color-surface: #0f172a;
+  --color-on-surface: #f8fafc;
+  --color-surface-tint: #94a3b8;
+  --color-surface-dim: #1e293b;
+  --color-surface-bright: #0f172a;
+  --color-surface-variant: #1e293b;
+  --color-on-surface-variant: #94a3b8;
+  
+  --color-surface-container-lowest: #020617;
+  --color-surface-container-low: #0f172a;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  
+  --color-inverse-surface: #f8fafc;
+  --color-inverse-on-surface: #090e1a;
+  --color-inverse-primary: #38bdf8;
+
+  --color-outline: #475569;
+  --color-outline-variant: #334155;
+}
+
+/* Apply overrides only when dark theme is active */
+.dark body {
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+}
+
+.dark * {
+  border-color: var(--color-outline-variant) !important;
+}
+
+.dark select,
+.dark input,
+.dark textarea {
+  background-color: var(--color-surface) !important;
+  color: var(--color-on-surface) !important;
+  border-color: var(--color-outline) !important;
+}
+
+.dark .bg-white {
+  background-color: var(--color-surface-container-lowest) !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-50\/50,
+.dark .bg-slate-50\/80 {
+  background-color: var(--color-surface-container-low) !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: var(--color-surface-container) !important;
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: var(--color-on-surface) !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: var(--color-on-surface-variant) !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-100,
+.dark .border-slate-300 {
+  border-color: var(--color-outline-variant) !important;
+}

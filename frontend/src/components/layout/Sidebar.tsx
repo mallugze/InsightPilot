@@ -42,7 +42,7 @@ export const Sidebar = () => {
         { to: '/settings', label: 'Settings', icon: Settings },
       ]
     : [
-        { to: '/workspaces', label: 'Workspace', icon: FolderOpen },
+        
         { to: '/upload', label: 'Upload', icon: Upload },
       ];
 

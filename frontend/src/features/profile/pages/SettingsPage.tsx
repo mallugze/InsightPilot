@@ -1,21 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useWorkspace } from '../../../context/WorkspaceContext';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
-import { Badge } from '../../../components/ui/Badge';
 import { 
   User, 
   Sliders, 
   Bell, 
   Info, 
-  Check,
-  Moon,
-  Sun
+  Check
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { profile, saveProfile } = useWorkspace();
-  const [activeTab, setActiveTab] = useState<'profile' | 'theme' | 'workspace' | 'analysis' | 'notifications' | 'about'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'workspace' | 'analysis' | 'notifications' | 'about'>('profile');
   
   // Profile local state
   const [fullName, setFullName] = useState(profile?.fullName || '');
@@ -23,23 +20,11 @@ export default function SettingsPage() {
   const [company, setCompany] = useState(profile?.companyName || '');
   
   // Custom preferences states
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (localStorage.getItem('color-theme') as 'light' | 'dark') || 'light';
-  });
   const [sessionTimeout, setSessionTimeout] = useState('30 Minutes');
   const [mlScoring, setMlScoring] = useState(true);
   const [sigThreshold, setSigThreshold] = useState(0.05);
   const [bellNotifs, setBellNotifs] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('color-theme', theme);
-  }, [theme]);
 
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +35,6 @@ export default function SettingsPage() {
 
   const menuItems = [
     { id: 'profile', name: 'Profile Settings', icon: <User size={18} /> },
-    { id: 'theme', name: 'UI Color Theme', icon: <Sun size={18} /> },
     { id: 'workspace', name: 'Workspaces & Session', icon: <Sliders size={18} /> },
     { id: 'analysis', name: 'Analysis Criteria', icon: <Sliders size={18} /> },
     { id: 'notifications', name: 'Notification Triggers', icon: <Bell size={18} /> },
@@ -142,39 +126,6 @@ export default function SettingsPage() {
                 </form>
               )}
 
-              {/* UI Color Theme Tab */}
-              {activeTab === 'theme' && (
-                <div className="space-y-6">
-                  <div className="border-b pb-3">
-                    <h3 className="text-base font-bold text-slate-800 m-0">UI Color Theme</h3>
-                    <p className="text-xs text-slate-500 m-0">Customize visual theme modes for your intelligence dashboard.</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 pt-4">
-                    <div 
-                      onClick={() => setTheme('light')}
-                      className={`border rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
-                        theme === 'light' ? 'border-slate-800 ring-2 ring-slate-800/10 bg-slate-50/50' : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <Sun size={28} className="text-amber-500" />
-                      <span className="text-sm font-bold text-slate-800">Light Theme</span>
-                      <Badge className="bg-slate-100 text-slate-700 text-[10px] font-bold">Standard</Badge>
-                    </div>
-
-                    <div 
-                      onClick={() => setTheme('dark')}
-                      className={`border rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
-                        theme === 'dark' ? 'border-slate-800 ring-2 ring-slate-800/10 bg-slate-50/50' : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <Moon size={28} className="text-indigo-500" />
-                      <span className="text-sm font-bold text-slate-800">Dark Theme</span>
-                      <Badge className="bg-slate-100 text-slate-700 text-[10px] font-bold">Experimental</Badge>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Workspace Preferences Tab */}
               {activeTab === 'workspace' && (

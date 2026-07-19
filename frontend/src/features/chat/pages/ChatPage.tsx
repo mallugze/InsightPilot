@@ -431,7 +431,7 @@ export default function ChatPage() {
             }}
             placeholder="Ask a question about your data..."
             disabled={isGenerating || !uploadState}
-            className="flex-1 bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400"
+            className="flex-1 bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 disabled:bg-slate-100 disabled:text-slate-400 caret-black"
           />
           <Button
             onClick={() => handleSendPrompt(inputText)}
