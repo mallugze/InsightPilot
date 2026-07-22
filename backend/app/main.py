@@ -22,14 +22,14 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Fix 1: Allow Vercel origins and production domains alongside local dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173"
-    ],
+    allow_origins=["*"],  # Allows local dev and any Vercel deployment domain
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Session-ID"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 from app.exceptions import DatasetValidationError
@@ -82,6 +82,7 @@ def index_redirect():
     return RedirectResponse(url="/docs")
 
 @app.get("/health", tags=["health"])
+@app.get("/api/health", tags=["health"])
 def health_check(db: Session = Depends(get_db)):
     """
     Health check endpoint reporting API server status and verifying database connectivity.
@@ -100,5 +101,12 @@ def health_check(db: Session = Depends(get_db)):
         "database": db_status
     }
 
-# Register Sub-API routes
+# Register Sub-API routes under standard v1 prefix (/api/v1)
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Fix 2: Alias router under /api prefix for Vercel rewrite compatibility
+if settings.API_V1_STR.startswith("/api"):
+    # Also register without leading /api if Vercel strips it out
+    alt_prefix = settings.API_V1_STR.replace("/api", "", 1)
+    if alt_prefix:
+        app.include_router(api_router, prefix=alt_prefix)
