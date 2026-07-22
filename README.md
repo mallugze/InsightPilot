@@ -130,7 +130,7 @@ Deploy with Docker to AWS ECS/Fargate, using Amazon RDS for PostgreSQL and Amazo
 
 # 👨‍💻 Developed By
 
-**Mallikarjun**
+**Channaveer**
 
 AI & Machine Learning Engineer
 
